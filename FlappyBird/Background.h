@@ -16,7 +16,7 @@ public:
 	const std::string GetBackgroundTexture() { return mBackground; };
 	const SDL_Rect* GetBackgroundRect() { return &mBackgroundRect; };
 
-	void MoveFloor();
+	void MoveFloor(float speed);
 private:
 	const std::string mFloor;
 	const std::string mBackground;

@@ -7,22 +7,22 @@
 #include <time.h>
 
 struct BothPipes {
-	SDL_Rect pipeOne;
-	SDL_Rect pipeTwo;
+	SDL_Rect pipe;
+	SDL_Rect pipeDown;
 };
 
 class Pipes
 {
 public:
 	Pipes(const int width, const int height);
-	void Move();
+	void Move(float speed);
 
 	// Getters
 	const std::string GetPipe() { return mTexture; };
 	const std::string GetPipeDown() { return mTextureDown; };
 	const int GetSize() { return mPipeQueue.size(); };
-	const SDL_Rect *GetPipeOneRect(int index) { return &mPipeQueue[index].pipeOne; };
-	const SDL_Rect *GetPipeTwoRect(int index) { return &mPipeQueue[index].pipeTwo; };
+	const SDL_Rect *GetPipeRect(int index) { return &mPipeQueue[index].pipe; };
+	const SDL_Rect *GetPipeDown(int index) { return &mPipeQueue[index].pipeDown; };
 private:
 	void NewPipe();
 	void DestroyPipe();

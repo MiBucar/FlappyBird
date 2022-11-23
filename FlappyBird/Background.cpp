@@ -5,9 +5,9 @@ mBackground("images//Background.png"), mBackgroundRect{ 0, 0, 1280, 640 }
 {
 }
 
-void Background::MoveFloor()
+void Background::MoveFloor(float speed)
 {
-	mFloorRect.x -= 1;
+	mFloorRect.x -= speed;
 	if (mFloorRect.x == -720) {
 		mFloorRect.x = 0;
 	}
