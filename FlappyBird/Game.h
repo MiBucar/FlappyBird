@@ -17,6 +17,8 @@ private:
 	void GameEvents();
 	void StartGame();
 	void HandleMouse(SDL_MouseButtonEvent btn);
+	void CheckCollisions();
+	bool CheckMousePos(int btn);
 
 	// Game States
 	void Playing();
@@ -34,7 +36,6 @@ private:
 	Renderer mRenderer;
 
 	SDL_Point mMousePos;
-	SDL_MouseButtonEvent mBtnEvent;
 
 	const int mFPS = 200;
 	const int mFrameDelay = 1000 / mFPS;

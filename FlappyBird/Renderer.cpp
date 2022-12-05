@@ -24,11 +24,14 @@ Renderer::Renderer(Player* player, Background* background, Pipes* pipes, const i
 	mPipeTexture = IMG_LoadTexture(mRenderer, mPipes->GetPipe().c_str());
 	mPipeDownTexture = IMG_LoadTexture(mRenderer, mPipes->GetPipeDown().c_str());
 	mFloorTexture = IMG_LoadTexture(mRenderer, mBackground->GetFloorTexture().c_str());
+
 	mBackgroundTexture[GAMEPLAY] = IMG_LoadTexture(mRenderer, mBackground->GetBackgroundTexture(GAMEPLAY).c_str());
 	mBackgroundTexture[MENU] = IMG_LoadTexture(mRenderer, mBackground->GetBackgroundTexture(MENU).c_str());
 	mDeathScreenTexture = IMG_LoadTexture(mRenderer, mBackground->GetDeathScreenBackground().c_str());
+
 	mButtonTexture[PLAY] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(PLAY).c_str());
 	mButtonTexture[PLAY_AGAIN] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(PLAY_AGAIN).c_str());
+	mButtonTexture[HOME] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(HOME).c_str());
 }
 
 Renderer::~Renderer()
@@ -76,8 +79,9 @@ void Renderer::RenderPlayer(SDL_Texture* texture)
 		mPlayerAnimation[i].h = 50;
 		mPlayerAnimation[i].w = 50;
 	}
+
 	mSrc.w = mPlayer->GetRect()->w;
-	mSrc.h = mPlayer->GetRect()->h;
+	mSrc.w = mPlayer->GetRect()->h;
 
 	int frameToDraw = ((SDL_GetTicks() - mStartTime) * animationRate / 1000) % animationLength;
 	SDL_RenderCopy(mRenderer, texture, &mPlayerAnimation[frameToDraw], mPlayer->GetRect());
@@ -129,5 +133,9 @@ void Renderer::RenderDeathScreen()
 	mSrc.w = mBackground->GetButtonRect(PLAY_AGAIN)->w;
 	mSrc.h = mBackground->GetButtonRect(PLAY_AGAIN)->h;
 	SDL_RenderCopy(mRenderer, mButtonTexture[PLAY_AGAIN], &mSrc, mBackground->GetButtonRect(PLAY_AGAIN));
+
+	mSrc.w = mBackground->GetButtonRect(HOME)->w;
+	mSrc.h = mBackground->GetButtonRect(HOME)->h;
+	SDL_RenderCopy(mRenderer, mButtonTexture[HOME], &mSrc, mBackground->GetButtonRect(HOME));
 }
 

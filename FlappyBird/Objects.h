@@ -16,6 +16,7 @@ namespace obj {
 	enum Buttons {
 		PLAY,
 		PLAY_AGAIN,
+		HOME,
 		SCORE,
 		SETTINGS,
 		EMPTYBTN

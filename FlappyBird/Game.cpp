@@ -77,11 +77,7 @@ void Game::Playing()
 	mPipes->Move(mSpeed);
 	mBackground->MoveFloor(mSpeed);
 
-	for (int i = 0; i < mPipes->GetSize(); i++) {
-		if (Collision::CheckCollision(mPlayer->GetRect(), mPipes->GetPipeRect(i), mPipes->GetPipeDown(i))) {
-			mPlayer->Died();
-		};
-	}
+	CheckCollisions();
 
 	mRenderer.RenderGameplay();
 }
@@ -100,6 +96,7 @@ void Game::Died()
 void Game::StartGame()
 {
 	mPlayer->Alive();
+	mPlayer->Start();
 	mPipes->Start();
 }
 
@@ -107,20 +104,49 @@ void Game::HandleMouse(SDL_MouseButtonEvent btn)
 {
 	if (btn.button == SDL_BUTTON_LEFT) {
 		if (mGameStarted == false) {
-			if (mMousePos.x >= mBackground->GetButtonRect(PLAY)->x && mMousePos.x <= mBackground->GetButtonRect(PLAY)->x + mBackground->GetButtonRect(PLAY)->w &&
-				mMousePos.y >= mBackground->GetButtonRect(PLAY)->y && mMousePos.y <= mBackground->GetButtonRect(PLAY)->y + mBackground->GetButtonRect(PLAY)->h) {
+			if (CheckMousePos(PLAY)) {
 				mGameStarted = true;
 				StartGame();
 			}
 		}
 		else {
-			if (mMousePos.x >= mBackground->GetButtonRect(PLAY_AGAIN)->x && mMousePos.x <= mBackground->GetButtonRect(PLAY_AGAIN)->x + mBackground->GetButtonRect(PLAY_AGAIN)->w &&
-				mMousePos.y >= mBackground->GetButtonRect(PLAY_AGAIN)->y && mMousePos.y <= mBackground->GetButtonRect(PLAY_AGAIN)->y + mBackground->GetButtonRect(PLAY_AGAIN)->h) {
+			if (CheckMousePos(PLAY_AGAIN)) {
 				mGameStarted = true;
 				StartGame();
 			}
+			else if (CheckMousePos(HOME)) {
+				mGameStarted = false;
+			}
 		}
 	}
+}
+
+void Game::CheckCollisions()
+{
+	for (int i = 0; i < mPipes->GetSize(); i++) {
+		if (Collision::CheckPipeCollision(mPlayer->GetRect(), mPipes->GetPipeRect(i), mPipes->GetPipeDown(i))) {
+			mPlayer->Died();
+		};
+	}
+
+	if (Collision::CheckFloorCollision(mPlayer->GetRect(), mScreenHeight)) {
+		mPlayer->Died();
+	};
+
+	if (Collision::CheckCeilingCollision(mPlayer->GetRect())) {
+		mPlayer->Block();
+	}
+}
+
+// Check if mouse position is within the button position
+bool Game::CheckMousePos(int btn)
+{
+	if (mMousePos.x >= mBackground->GetButtonRect(btn)->x && mMousePos.x <= mBackground->GetButtonRect(btn)->x + mBackground->GetButtonRect(btn)->w &&
+		mMousePos.y >= mBackground->GetButtonRect(btn)->y && mMousePos.y <= mBackground->GetButtonRect(btn)->y + mBackground->GetButtonRect(btn)->h) {
+		return true;
+	}
+
+	return false;
 }
 
 

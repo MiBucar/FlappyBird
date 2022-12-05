@@ -7,14 +7,15 @@ class Player
 {
 public:
 	Player(const int width, const int height);
-	~Player();
 
 	void Move(bool gameStarted);
+	void Start();
+	void Block();
 	const void Died() { mIsDead = true; };
 	const void Alive() { mIsDead = false; };
 
 	// Getters
-	const SDL_Rect* GetRect() { return &mRect; };
+	const SDL_Rect* GetRect() const{ return &mRect; };
 	const std::string GetFlyingTexture() { return mFlyingTexture; };
 	const std::string GetFallingTexture() { return mFallingTexture; };
 	const bool IsDead() { return mIsDead; };
@@ -27,5 +28,7 @@ private:
 	int mJumpHeight;
 	bool mIsDead = false;
 
+	const int mWidth;
+	const int mHeight;
 };
 

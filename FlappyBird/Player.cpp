@@ -1,13 +1,9 @@
 #include "Player.h"
 
-Player::Player(const int width, const int height) : mFlyingTexture("images//FlappyBirdAnimation.png"), mFallingTexture("images//FlappyBirdFallingAnimation.png"),
-mRect{width / 2 - 50,  height / 2 - 50, 50, 50}, mFallSpeed(1.5)
+Player::Player(const int width, const int height) : mWidth(width), mHeight(height), mFlyingTexture("images//FlappyBirdAnimation.png"), mFallingTexture("images//FlappyBirdFallingAnimation.png"),
+mRect{mWidth / 2 - 50,  mHeight / 2 - 50, 50, 50}, mFallSpeed(1.5)
 {
 	mJumpHeight = 20;
-}
-
-Player::~Player()
-{
 }
 
 void Player::Move(bool gameStarted)
@@ -30,5 +26,18 @@ void Player::Move(bool gameStarted)
 			}
 		}
 	}
+}
+
+void Player::Start()
+{
+	mRect.x = mWidth / 2 - 50;
+	mRect.y = mHeight / 2 - 50;
+	mRect.h = 50;
+	mRect.w = 50;
+}
+
+void Player::Block()
+{
+	mRect.y = 0;
 }
 
