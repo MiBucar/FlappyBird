@@ -1,7 +1,7 @@
 #include "Renderer.h"
 
-Renderer::Renderer() : mWindow(nullptr), mRenderer(nullptr), mSrc{ 0, 0, 0, 0 }, mPlayer(mWidth, mHeight), mStartTime(SDL_GetTicks()), mPipes(mWidth, mHeight), mBackground(mHeight)
-{
+Renderer::Renderer(Player* player, Background* background, Pipes* pipes, const int width, const int height) : mPlayer(player), mPipes(pipes), mBackground(background), mWidth(width), mHeight(height), mWindow(nullptr), mRenderer(nullptr), mSrc{ 0, 0, 0, 0 }, mStartTime(SDL_GetTicks()), mMousePos{0, 0} {
+
 	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
 		std::cout << "Failed to init the video: " << SDL_GetError() << "\n";
 	}
@@ -19,13 +19,16 @@ Renderer::Renderer() : mWindow(nullptr), mRenderer(nullptr), mSrc{ 0, 0, 0, 0 },
 		}
 	}
 
-	mPlayerTexture[FLYING] = IMG_LoadTexture(mRenderer, mPlayer.GetFlyingTexture().c_str());
-	mPlayerTexture[FALLING] = IMG_LoadTexture(mRenderer, mPlayer.GetFallingTexture().c_str());
-	if (!mPlayerTexture[FALLING]) std::cout << "Texture not loaded";
-	mPipeTexture = IMG_LoadTexture(mRenderer, mPipes.GetPipe().c_str());
-	mPipeDownTexture = IMG_LoadTexture(mRenderer, mPipes.GetPipeDown().c_str());
-	mFloorTexture = IMG_LoadTexture(mRenderer, mBackground.GetFloorTexture().c_str());
-	mBackgroundTexture = IMG_LoadTexture(mRenderer, mBackground.GetBackgroundTexture().c_str());
+	mPlayerTexture[FLYING] = IMG_LoadTexture(mRenderer, mPlayer->GetFlyingTexture().c_str());
+	mPlayerTexture[FALLING] = IMG_LoadTexture(mRenderer, mPlayer->GetFallingTexture().c_str());
+	mPipeTexture = IMG_LoadTexture(mRenderer, mPipes->GetPipe().c_str());
+	mPipeDownTexture = IMG_LoadTexture(mRenderer, mPipes->GetPipeDown().c_str());
+	mFloorTexture = IMG_LoadTexture(mRenderer, mBackground->GetFloorTexture().c_str());
+	mBackgroundTexture[GAMEPLAY] = IMG_LoadTexture(mRenderer, mBackground->GetBackgroundTexture(GAMEPLAY).c_str());
+	mBackgroundTexture[MENU] = IMG_LoadTexture(mRenderer, mBackground->GetBackgroundTexture(MENU).c_str());
+	mDeathScreenTexture = IMG_LoadTexture(mRenderer, mBackground->GetDeathScreenBackground().c_str());
+	mButtonTexture[PLAY] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(PLAY).c_str());
+	mButtonTexture[PLAY_AGAIN] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(PLAY_AGAIN).c_str());
 }
 
 Renderer::~Renderer()
@@ -36,42 +39,25 @@ Renderer::~Renderer()
 
 // Functions
 
-void Renderer::RenderGame()
-{
-	if (mGameStarted == false || mPlayer.IsDead()) mSpeed = 0;
-	else mSpeed = 1;
-	// Player Move
-	UpdateGameplay();
-	// Render
-	RenderGameplay();
-}
 
 void Renderer::RenderGameplay()
 {
-	SDL_RenderClear(mRenderer);
-
-	RenderBackground();
+	RenderBackground(GAMEPLAY);
 	RenderPipes();
 
-	if (mPlayer.IsDead()) RenderPlayer(mPlayerTexture[FALLING]);
+	if (mPlayer->IsDead()) RenderPlayer(mPlayerTexture[FALLING]);
 	else RenderPlayer(mPlayerTexture[FLYING]);
 	
 	RenderFloor();
-
-	SDL_RenderPresent(mRenderer);
 }
 
-void Renderer::UpdateGameplay()
+void Renderer::RenderMenu()
 {
-	mPlayer.Move(mGameStarted);
-	mPipes.Move(mSpeed);
-	mBackground.MoveFloor(mSpeed);
 
-	for (int i = 0; i < mPipes.GetSize(); i++) {
-		if (Collision::CheckCollision(mPlayer.GetRect(), mPipes.GetPipeRect(i), mPipes.GetPipeDown(i))) {
-			mPlayer.Died();
-		};
-	}
+	RenderBackground(MENU);
+	RenderFloor();
+	RenderButtons();
+
 }
 
 void Renderer::RenderPlayer(SDL_Texture* texture)
@@ -90,37 +76,58 @@ void Renderer::RenderPlayer(SDL_Texture* texture)
 		mPlayerAnimation[i].h = 50;
 		mPlayerAnimation[i].w = 50;
 	}
-	mSrc.w = mPlayer.GetRect()->w;
-	mSrc.h = mPlayer.GetRect()->h;
+	mSrc.w = mPlayer->GetRect()->w;
+	mSrc.h = mPlayer->GetRect()->h;
 
 	int frameToDraw = ((SDL_GetTicks() - mStartTime) * animationRate / 1000) % animationLength;
-	SDL_RenderCopy(mRenderer, texture, &mPlayerAnimation[frameToDraw], mPlayer.GetRect());
+	SDL_RenderCopy(mRenderer, texture, &mPlayerAnimation[frameToDraw], mPlayer->GetRect());
 }
 
 void Renderer::RenderPipes()
 {
-	mSrc.w = mPipes.GetPipeRect(0)->w;
-	mSrc.h = mPipes.GetPipeRect(0)->h;
+	mSrc.w = mPipes->GetPipeRect(0)->w;
+	mSrc.h = mPipes->GetPipeRect(0)->h;
 
-	for (int i = 0; i < mPipes.GetSize(); i++) {
-		SDL_RenderCopy(mRenderer, mPipeTexture, &mSrc, mPipes.GetPipeRect(i));
+	for (int i = 0; i < mPipes->GetSize(); i++) {
+		SDL_RenderCopy(mRenderer, mPipeTexture, &mSrc, mPipes->GetPipeRect(i));
 
-		SDL_RenderCopy(mRenderer, mPipeDownTexture, &mSrc, mPipes.GetPipeDown(i));
+		SDL_RenderCopy(mRenderer, mPipeDownTexture, &mSrc, mPipes->GetPipeDown(i));
 	}
 }
 
 void Renderer::RenderFloor()
 {
-	mSrc.w = mBackground.GetFloorRect()->w;
-	mSrc.h = mBackground.GetFloorRect()->h;
+	mSrc.w = mBackground->GetFloorRect()->w;
+	mSrc.h = mBackground->GetFloorRect()->h;
 
-	SDL_RenderCopy(mRenderer, mFloorTexture, &mSrc, mBackground.GetFloorRect());
+	SDL_RenderCopy(mRenderer, mFloorTexture, &mSrc, mBackground->GetFloorRect());
 }
 
-void Renderer::RenderBackground()
+void Renderer::RenderBackground(BackgroundTextures texture)
 {
-	mSrc.w = mBackground.GetBackgroundRect()->w;
-	mSrc.h = mBackground.GetBackgroundRect()->h;
+	mSrc.w = mBackground->GetBackgroundRect()->w;
+	mSrc.h = mBackground->GetBackgroundRect()->h;
 
-	SDL_RenderCopy(mRenderer, mBackgroundTexture, &mSrc, mBackground.GetBackgroundRect());
+	SDL_RenderCopy(mRenderer, mBackgroundTexture[texture], &mSrc, mBackground->GetBackgroundRect());
 }
+
+void Renderer::RenderButtons()
+{
+	mSrc.w = mBackground->GetButtonRect(PLAY)->w;
+	mSrc.h = mBackground->GetButtonRect(PLAY)->h;
+
+	SDL_RenderCopy(mRenderer, mButtonTexture[PLAY], &mSrc, mBackground->GetButtonRect(PLAY));
+}
+
+void Renderer::RenderDeathScreen()
+{
+	mSrc.w = mBackground->GetDeathScreenRect()->w;
+	mSrc.h = mBackground->GetDeathScreenRect()->h;
+
+	SDL_RenderCopy(mRenderer, mDeathScreenTexture, &mSrc, mBackground->GetDeathScreenRect());
+
+	mSrc.w = mBackground->GetButtonRect(PLAY_AGAIN)->w;
+	mSrc.h = mBackground->GetButtonRect(PLAY_AGAIN)->h;
+	SDL_RenderCopy(mRenderer, mButtonTexture[PLAY_AGAIN], &mSrc, mBackground->GetButtonRect(PLAY_AGAIN));
+}
+

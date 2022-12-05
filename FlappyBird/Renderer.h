@@ -2,54 +2,52 @@
 #include <Pipes.h>
 #include <Background.h>
 #include <Collision.h>
+#include <Objects.h>
 #pragma once
+using namespace::obj;
 
 class Renderer
 {
 public:
-	Renderer();
+	Renderer(Player* player, Background* background, Pipes* pipes, const int width, const int height);
 	~Renderer();
 
-	void RenderGame();
-	const void SetActive() { mGameStarted = true; };
-	const void SetInactive() { mGameStarted = false; };
+	void RenderGameplay();
+	void RenderMenu();
+	void RenderDeathScreen();
 
 	// Getters
-	const bool IsDead() { return mPlayer.IsDead(); };
+	const bool IsDead() { return mPlayer->IsDead(); };
+	SDL_Renderer* GetRenderer() const { return mRenderer; };
 private:
 	// Functions
-	void RenderGameplay();
-	void UpdateGameplay();
+
 	void RenderPlayer(SDL_Texture* texture);
 	void RenderPipes();
 	void RenderFloor();
-	void RenderBackground();
-
-	// Objects
-	enum Textures {
-		FLYING,
-		FALLING,
-		EMPTY
-	};
+	void RenderBackground(BackgroundTextures texture);
+	void RenderButtons();
 
 	SDL_Window* mWindow;
 	SDL_Renderer* mRenderer;
-	SDL_Texture* mPlayerTexture[EMPTY];
+	SDL_Texture* mPlayerTexture[EMPTYPLY];
 	SDL_Texture* mPipeTexture;
 	SDL_Texture* mPipeDownTexture;
 	SDL_Texture* mFloorTexture;
-	SDL_Texture* mBackgroundTexture;
+	SDL_Texture* mBackgroundTexture[EMPTYBCKG];
+	SDL_Texture* mDeathScreenTexture;
+	SDL_Texture* mButtonTexture[EMPTYBTN];
 	SDL_Rect mSrc;
 	SDL_Rect mPlayerAnimation[6];
+	SDL_Point mMousePos;
 
-	const int mWidth = 1280;
-	const int mHeight = 720;
 	int mStartTime;
 
-	Player mPlayer;
-	Pipes mPipes;
-	Background mBackground;
-	bool mGameStarted = false;
-	float mSpeed = 0;
+	const int mWidth;
+	const int mHeight;
+
+	Player *mPlayer;
+	Pipes *mPipes;
+	Background *mBackground;
 };
 

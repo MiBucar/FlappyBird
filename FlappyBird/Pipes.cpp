@@ -24,6 +24,13 @@ void Pipes::Move(float speed)
 	DestroyPipe();
 }
 
+// Reset pipes
+void Pipes::Start()
+{
+	if (mPipeQueue.size() > 0) mPipeQueue.clear();
+	mPipeQueue.push_front(CreatePipe());
+}
+
 void Pipes::NewPipe()
 {
 	for (int i = 0; i < mPipeQueue.size(); i++) {

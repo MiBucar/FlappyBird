@@ -10,7 +10,8 @@ public:
 	~Player();
 
 	void Move(bool gameStarted);
-	void Died() { mIsDead = true; };
+	const void Died() { mIsDead = true; };
+	const void Alive() { mIsDead = false; };
 
 	// Getters
 	const SDL_Rect* GetRect() { return &mRect; };

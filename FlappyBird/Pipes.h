@@ -16,6 +16,7 @@ class Pipes
 public:
 	Pipes(const int width, const int height);
 	void Move(float speed);
+	void Start();
 
 	// Getters
 	const std::string GetPipe() { return mTexture; };
