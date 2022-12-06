@@ -11,6 +11,10 @@ Game::~Game()
 	delete mPlayer;
 	delete mPipes;
 	delete mBackground;
+
+	TTF_Quit();
+	IMG_Quit();
+	SDL_Quit();
 }
 
 int Game::Run()

@@ -41,6 +41,7 @@ private:
 	SDL_Rect mSrc;
 	SDL_Rect mPlayerAnimation[6];
 	SDL_Point mMousePos;
+	TTF_Font* mFont;
 
 	int mStartTime;
 

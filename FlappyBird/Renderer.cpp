@@ -61,6 +61,8 @@ Renderer::~Renderer()
 	SDL_DestroyTexture(mPipeDownTexture); mPipeDownTexture = nullptr;
 	SDL_DestroyTexture(mFloorTexture); mFloorTexture = nullptr;
 	SDL_DestroyTexture(mDeathScreenTexture); mDeathScreenTexture = nullptr;
+
+	TTF_CloseFont(mFont); mFont = nullptr;
 }
 
 // Functions
