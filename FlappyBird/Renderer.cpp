@@ -8,6 +8,9 @@ Renderer::Renderer(Player* player, Background* background, Pipes* pipes, const i
 	if (!IMG_Init(IMG_INIT_PNG)) {
 		std::cout << "Failed to init the image: " << SDL_GetError() << "\n";
 	}
+	if (TTF_Init() == -1) {
+		std::cout << "Failed to init the image: " << SDL_GetError() << "\n";
+	}
 	else {
 		mWindow = SDL_CreateWindow("Flappy Bird", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, mWidth, mHeight, 0);
 		if (!mWindow) {
@@ -38,6 +41,26 @@ Renderer::~Renderer()
 {
 	SDL_DestroyWindow(mWindow); mWindow = nullptr;
 	SDL_DestroyRenderer(mRenderer); mRenderer = nullptr;
+
+	for (int i = 0; i < EMPTYPLY; i++) {
+		SDL_DestroyTexture(mPlayerTexture[i]);
+		mPlayerTexture[i] = nullptr;
+	}
+
+	for (int i = 0; i < EMPTYBCKG; i++) {
+		SDL_DestroyTexture(mBackgroundTexture[i]);
+		mBackgroundTexture[i] = nullptr;
+	}
+
+	for (int i = 0; i < EMPTYBTN; i++) {
+		SDL_DestroyTexture(mButtonTexture[i]);
+		mButtonTexture[i] = nullptr;
+	}
+
+	SDL_DestroyTexture(mPipeTexture); mPipeTexture = nullptr;
+	SDL_DestroyTexture(mPipeDownTexture); mPipeDownTexture = nullptr;
+	SDL_DestroyTexture(mFloorTexture); mFloorTexture = nullptr;
+	SDL_DestroyTexture(mDeathScreenTexture); mDeathScreenTexture = nullptr;
 }
 
 // Functions

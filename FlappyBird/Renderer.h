@@ -3,6 +3,7 @@
 #include <Background.h>
 #include <Collision.h>
 #include <Objects.h>
+#include <SDL_ttf.h>
 #pragma once
 using namespace::obj;
 
