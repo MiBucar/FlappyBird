@@ -20,6 +20,10 @@ Renderer::Renderer(Player* player, Background* background, Pipes* pipes, const i
 		if (!mRenderer) {
 			std::cout << "Failed to create the renderer: " << SDL_GetError() << "\n";
 		}
+		mFont = TTF_OpenFont("font//Pixeled.ttf", 28);
+		if (!mFont) {
+			std::cout << "Failed to create the font: " << SDL_GetError() << "\n";
+		}
 	}
 
 	mPlayerTexture[PlayerTextures::FLYING] = IMG_LoadTexture(mRenderer, mPlayer->GetFlyingTexture().c_str());
@@ -62,7 +66,7 @@ Renderer::~Renderer()
 	SDL_DestroyTexture(mFloorTexture); mFloorTexture = nullptr;
 	SDL_DestroyTexture(mDeathScreenTexture); mDeathScreenTexture = nullptr;
 
-	TTF_CloseFont(mFont); mFont = nullptr;
+	mFont = nullptr; TTF_CloseFont(mFont);
 }
 
 // Functions
