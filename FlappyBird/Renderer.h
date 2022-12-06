@@ -4,6 +4,7 @@
 #include <Collision.h>
 #include <Objects.h>
 #include <SDL_ttf.h>
+#include <string>
 #pragma once
 using namespace::obj;
 
@@ -13,9 +14,9 @@ public:
 	Renderer(Player* player, Background* background, Pipes* pipes, const int width, const int height);
 	~Renderer();
 
-	void RenderGameplay();
+	void RenderGameplay(int score);
 	void RenderMenu();
-	void RenderDeathScreen();
+	void RenderDeathScreen(int score, int highScore);
 
 	// Getters
 	bool IsDead() const{ return mPlayer->IsDead(); };
@@ -28,6 +29,7 @@ private:
 	void RenderFloor();
 	void RenderBackground(BackgroundTextures texture);
 	void RenderButtons();
+	void RenderText(int score);
 
 	SDL_Window* mWindow;
 	SDL_Renderer* mRenderer;
@@ -42,6 +44,12 @@ private:
 	SDL_Rect mPlayerAnimation[6];
 	SDL_Point mMousePos;
 	TTF_Font* mFont;
+
+	std::string mText[EMPTYTEXT];
+	SDL_Surface* mTextSurface[EMPTYTEXT];
+	SDL_Texture* mTextTexture[EMPTYTEXT];
+
+	SDL_Color mColorBrown;
 
 	int mStartTime;
 

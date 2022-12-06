@@ -23,6 +23,8 @@ public:
 	std::string GetButtonTexture(int btn) const { return mButton[btn]; };
 	const SDL_Rect* GetButtonRect(int btn) const { return &mButtonRect[btn]; };
 
+	const SDL_Rect* GetTextRect(int txt) const { return &mTextRect[txt]; };
+
 	void MoveFloor(int speed);
 private:
 	std::string mFloor;
@@ -34,6 +36,7 @@ private:
 	SDL_Rect mDeathScreenRect;
 	SDL_Rect mBackgroundRect;
 	SDL_Rect mButtonRect[EMPTYBTN];
+	SDL_Rect mTextRect[EMPTYTEXT];
 
 	const int mWidth;
 	const int mHeight;

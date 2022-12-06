@@ -14,11 +14,11 @@ namespace obj {
 	};
 
 	enum Buttons {
-		PLAY,
-		PLAY_AGAIN,
-		HOME,
-		SCORE,
-		SETTINGS,
+		BTNPLAY,
+		BTNPLAY_AGAIN,
+		BTNHOME,
+		BTNSCORE,
+		BTNSETTINGS,
 		EMPTYBTN
 	};
 
@@ -26,5 +26,12 @@ namespace obj {
 		SCORES,
 		HIGH_SCORE,
 		EMPTYFILE
+	};
+
+	enum Text {
+		TEXTSCOREGMP,
+		TEXTSCOREDS,
+		TEXTBEST,
+		EMPTYTEXT
 	};
 }

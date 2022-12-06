@@ -16,5 +16,7 @@ public:
 private:
 	std::ofstream mFileO[EMPTYFILE];
 	std::ifstream mFileI[EMPTYFILE];
+
+	std::ifstream test;
 };
 

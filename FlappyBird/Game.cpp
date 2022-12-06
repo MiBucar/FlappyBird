@@ -2,7 +2,9 @@
 
 // Functions
 
-Game::Game() : mPlayer(new Player(mScreenWidth, mScreenHeight)), mPipes(new Pipes(mScreenWidth, mScreenHeight)), mBackground(new Background(mScreenWidth, mScreenHeight)), mRenderer(mPlayer, mBackground, mPipes, mScreenWidth, mScreenHeight), mIsRunning(true), mMousePos{ 0, 0 }
+Game::Game() : mPlayer(new Player(mScreenWidth, mScreenHeight)), mPipes(new Pipes(mScreenWidth, mScreenHeight)),
+mBackground(new Background(mScreenWidth, mScreenHeight)), mRenderer(mPlayer, mBackground, mPipes, mScreenWidth, mScreenHeight),
+mIsRunning(true), mMousePos{ 0, 0 }
 {
 }
 
@@ -84,15 +86,13 @@ void Game::GameEvents()
 
 void Game::Playing()
 {
-	std::cout << mScore;
-
 	mPlayer->Move(mGameStarted);
 	mPipes->Move(mSpeed);
 	mBackground->MoveFloor(mSpeed);
 
 	CheckCollisions();
 
-	mRenderer.RenderGameplay();
+	mRenderer.RenderGameplay(mScore);
 }
 
 void Game::Menu()
@@ -102,7 +102,10 @@ void Game::Menu()
 
 void Game::Died()
 {
-	mRenderer.RenderDeathScreen();
+	if (mScore > mData.GetHighScore()) {
+		mData.SetHighScore(mScore);
+	}
+	mRenderer.RenderDeathScreen(mScore, mData.GetHighScore());
 }
 
 
@@ -118,17 +121,17 @@ void Game::HandleMouse(SDL_MouseButtonEvent btn)
 {
 	if (btn.button == SDL_BUTTON_LEFT) {
 		if (mGameStarted == false) {
-			if (CheckMousePos(PLAY)) {
+			if (CheckMousePos(BTNPLAY)) {
 				mGameStarted = true;
 				StartGame();
 			}
 		}
 		else {
-			if (CheckMousePos(PLAY_AGAIN)) {
+			if (CheckMousePos(BTNPLAY_AGAIN)) {
 				mGameStarted = true;
 				StartGame();
 			}
-			else if (CheckMousePos(HOME)) {
+			else if (CheckMousePos(BTNHOME)) {
 				mGameStarted = false;
 			}
 		}
