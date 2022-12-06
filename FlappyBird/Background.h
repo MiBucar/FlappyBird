@@ -23,7 +23,7 @@ public:
 	std::string GetButtonTexture(int btn) const { return mButton[btn]; };
 	const SDL_Rect* GetButtonRect(int btn) const { return &mButtonRect[btn]; };
 
-	void MoveFloor(float speed);
+	void MoveFloor(int speed);
 private:
 	std::string mFloor;
 	std::string mDeathScreen;

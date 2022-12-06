@@ -24,7 +24,7 @@ mDeathScreenRect{width/2 - 250, height/2 - 250, 500, 400}
 	mButtonRect[Buttons::HOME].x = centerLeft; mButtonRect[Buttons::HOME].y = 540;
 }
 
-void Background::MoveFloor(float speed)
+void Background::MoveFloor(int speed)
 {
 	mFloorRect.x -= speed;
 	if (mFloorRect.x == -720) {

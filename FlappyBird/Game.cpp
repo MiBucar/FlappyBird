@@ -6,6 +6,13 @@ Game::Game() : mPlayer(new Player(mScreenWidth, mScreenHeight)), mPipes(new Pipe
 {
 }
 
+Game::~Game()
+{
+	delete mPlayer;
+	delete mPipes;
+	delete mBackground;
+}
+
 int Game::Run()
 {
 	Uint32 frameStart;
@@ -73,6 +80,8 @@ void Game::GameEvents()
 
 void Game::Playing()
 {
+	std::cout << mScore;
+
 	mPlayer->Move(mGameStarted);
 	mPipes->Move(mSpeed);
 	mBackground->MoveFloor(mSpeed);
@@ -98,6 +107,7 @@ void Game::StartGame()
 	mPlayer->Alive();
 	mPlayer->Start();
 	mPipes->Start();
+	mScore = 0;
 }
 
 void Game::HandleMouse(SDL_MouseButtonEvent btn)
@@ -126,6 +136,12 @@ void Game::CheckCollisions()
 	for (int i = 0; i < mPipes->GetSize(); i++) {
 		if (Collision::CheckPipeCollision(mPlayer->GetRect(), mPipes->GetPipeRect(i), mPipes->GetPipeDown(i))) {
 			mPlayer->Died();
+		};
+	}
+
+	for (int i = 0; i < mPipes->GetSize(); i++) {
+		if (Collision::CheckForScoreUpdate(mPlayer->GetRect(), mPipes->GetPipeRect(i))) {
+			mScore += 1;
 		};
 	}
 

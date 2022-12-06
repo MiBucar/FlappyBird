@@ -15,7 +15,7 @@ class Pipes
 {
 public:
 	Pipes(const int width, const int height);
-	void Move(float speed);
+	void Move(int speed);
 	void Start();
 
 	// Getters

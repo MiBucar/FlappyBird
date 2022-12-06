@@ -10,7 +10,7 @@ Pipes::Pipes(const int width, const int height) : mWidth(width), mHeight(height)
 
 // Functions
 
-void Pipes::Move(float speed)
+void Pipes::Move(int speed)
 {
 	srand(time(NULL));
 	mRandomNum = 120 + (rand() % 620);

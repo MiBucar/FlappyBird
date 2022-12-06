@@ -1,7 +1,7 @@
 #include "Player.h"
 
 Player::Player(const int width, const int height) : mWidth(width), mHeight(height), mFlyingTexture("images//FlappyBirdAnimation.png"), mFallingTexture("images//FlappyBirdFallingAnimation.png"),
-mRect{mWidth / 2 - 50,  mHeight / 2 - 50, 50, 50}, mFallSpeed(1.5)
+mRect{mWidth / 2 - 50,  mHeight / 2 - 50, 50, 50}, mFallSpeed(1)
 {
 	mJumpHeight = 20;
 }
@@ -13,7 +13,7 @@ void Player::Move(bool gameStarted)
 	if (gameStarted) {
 		if (mIsDead == false) {
 			if (state[SDL_SCANCODE_SPACE]) {
-				mRect.y = mRect.y - .5;
+				mRect.y = mRect.y - 1;
 			}
 			else {
 				mRect.y += mFallSpeed;

@@ -6,6 +6,7 @@ class Collision
 {
 public:
 	static bool CheckPipeCollision(const SDL_Rect *playerRect, const SDL_Rect *pipeRect, const SDL_Rect *pipeDownRect);
+	static bool CheckForScoreUpdate(const SDL_Rect* playerRect, const SDL_Rect* pipeRect);
 	static bool CheckFloorCollision(const SDL_Rect* playerRect, const int height);
 	static bool CheckCeilingCollision(const SDL_Rect* playerRect);
 };

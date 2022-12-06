@@ -12,6 +12,7 @@ class Game
 {
 public:
 	Game();
+	~Game();
 	int Run();
 private:
 	void PollEvents();
@@ -43,6 +44,7 @@ private:
 	const int mFrameDelay = 1000 / mFPS;
 
 	int mSpeed = 0;
+	int mScore = 0;
 	bool mGameStarted = false;
 };
 

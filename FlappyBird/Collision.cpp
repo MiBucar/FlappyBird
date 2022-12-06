@@ -17,6 +17,12 @@ bool Collision::CheckPipeCollision(const SDL_Rect* playerRect, const SDL_Rect* p
 	return false;
 }
 
+bool Collision::CheckForScoreUpdate(const SDL_Rect* playerRect, const SDL_Rect* pipeRect)
+{
+	if (playerRect->x + playerRect->w == pipeRect->x + (pipeRect->w / 2)) return true;
+	return false;
+}
+
 bool Collision::CheckFloorCollision(const SDL_Rect* playerRect, const int height)
 {
 	if (playerRect->y + playerRect->h >= height - 80) {
