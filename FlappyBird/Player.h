@@ -16,9 +16,9 @@ public:
 
 	// Getters
 	const SDL_Rect* GetRect() const{ return &mRect; };
-	const std::string GetFlyingTexture() { return mFlyingTexture; };
-	const std::string GetFallingTexture() { return mFallingTexture; };
-	const bool IsDead() { return mIsDead; };
+	std::string GetFlyingTexture() const{ return mFlyingTexture; };
+	std::string GetFallingTexture() const{ return mFallingTexture; };
+	bool IsDead() const{ return mIsDead; };
 
 private:
 	std::string mFlyingTexture;

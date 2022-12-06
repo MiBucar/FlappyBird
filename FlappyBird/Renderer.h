@@ -17,7 +17,7 @@ public:
 	void RenderDeathScreen();
 
 	// Getters
-	const bool IsDead() { return mPlayer->IsDead(); };
+	bool IsDead() const{ return mPlayer->IsDead(); };
 	SDL_Renderer* GetRenderer() const { return mRenderer; };
 private:
 	// Functions

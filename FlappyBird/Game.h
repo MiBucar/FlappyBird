@@ -5,6 +5,7 @@
 #include <Player.h>
 #include <Pipes.h>
 #include <Background.h>
+#include <Data.h>
 #pragma once
 
 class Game
@@ -30,6 +31,7 @@ private:
 	const int mScreenWidth = 1280;
 	const int mScreenHeight = 720;
 
+	Data mData;
 	Player *mPlayer;
 	Pipes *mPipes;
 	Background *mBackground;

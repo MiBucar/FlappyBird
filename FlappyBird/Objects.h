@@ -21,4 +21,10 @@ namespace obj {
 		SETTINGS,
 		EMPTYBTN
 	};
+
+	enum Files {
+		SCORES,
+		HIGH_SCORE,
+		EMPTYFILE
+	};
 }

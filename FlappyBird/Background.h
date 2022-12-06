@@ -14,7 +14,7 @@ public:
 	std::string GetFloorTexture() const { return mFloor; };
 	const SDL_Rect* GetFloorRect() const { return &mFloorRect; };
 
-	std::string GetBackgroundTexture(int text) const { return mBackground[text]; };
+	std::string GetBackgroundTexture(int id) const { return mBackground[id]; };
 	const SDL_Rect* GetBackgroundRect() const { return &mBackgroundRect; };
 
 	std::string GetDeathScreenBackground() const { return mDeathScreen; };

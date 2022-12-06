@@ -19,19 +19,19 @@ Renderer::Renderer(Player* player, Background* background, Pipes* pipes, const i
 		}
 	}
 
-	mPlayerTexture[FLYING] = IMG_LoadTexture(mRenderer, mPlayer->GetFlyingTexture().c_str());
-	mPlayerTexture[FALLING] = IMG_LoadTexture(mRenderer, mPlayer->GetFallingTexture().c_str());
+	mPlayerTexture[PlayerTextures::FLYING] = IMG_LoadTexture(mRenderer, mPlayer->GetFlyingTexture().c_str());
+	mPlayerTexture[PlayerTextures::FALLING] = IMG_LoadTexture(mRenderer, mPlayer->GetFallingTexture().c_str());
 	mPipeTexture = IMG_LoadTexture(mRenderer, mPipes->GetPipe().c_str());
 	mPipeDownTexture = IMG_LoadTexture(mRenderer, mPipes->GetPipeDown().c_str());
 	mFloorTexture = IMG_LoadTexture(mRenderer, mBackground->GetFloorTexture().c_str());
 
-	mBackgroundTexture[GAMEPLAY] = IMG_LoadTexture(mRenderer, mBackground->GetBackgroundTexture(GAMEPLAY).c_str());
-	mBackgroundTexture[MENU] = IMG_LoadTexture(mRenderer, mBackground->GetBackgroundTexture(MENU).c_str());
+	mBackgroundTexture[BackgroundTextures::GAMEPLAY] = IMG_LoadTexture(mRenderer, mBackground->GetBackgroundTexture(BackgroundTextures::GAMEPLAY).c_str());
+	mBackgroundTexture[BackgroundTextures::MENU] = IMG_LoadTexture(mRenderer, mBackground->GetBackgroundTexture(BackgroundTextures::MENU).c_str());
 	mDeathScreenTexture = IMG_LoadTexture(mRenderer, mBackground->GetDeathScreenBackground().c_str());
 
-	mButtonTexture[PLAY] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(PLAY).c_str());
-	mButtonTexture[PLAY_AGAIN] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(PLAY_AGAIN).c_str());
-	mButtonTexture[HOME] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(HOME).c_str());
+	mButtonTexture[Buttons::PLAY] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(Buttons::PLAY).c_str());
+	mButtonTexture[Buttons::PLAY_AGAIN] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(Buttons::PLAY_AGAIN).c_str());
+	mButtonTexture[Buttons::HOME] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(Buttons::HOME).c_str());
 }
 
 Renderer::~Renderer()

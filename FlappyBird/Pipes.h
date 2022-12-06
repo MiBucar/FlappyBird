@@ -19,11 +19,11 @@ public:
 	void Start();
 
 	// Getters
-	const std::string GetPipe() { return mTexture; };
-	const std::string GetPipeDown() { return mTextureDown; };
-	const int GetSize() { return mPipeQueue.size(); };
-	const SDL_Rect *GetPipeRect(int index) { return &mPipeQueue[index].pipe; };
-	const SDL_Rect *GetPipeDown(int index) { return &mPipeQueue[index].pipeDown; };
+	std::string GetPipe() const{ return mTexture; };
+	std::string GetPipeDown() const { return mTextureDown; };
+	int GetSize() const { return static_cast<int>(mPipeQueue.size()); };
+	const SDL_Rect *GetPipeRect(int index) const { return &mPipeQueue[index].pipe; };
+	const SDL_Rect *GetPipeDown(int index) const { return &mPipeQueue[index].pipeDown; };
 private:
 	void NewPipe();
 	void DestroyPipe();
