@@ -26,6 +26,7 @@ private:
 	void Playing();
 	void Died();
 	void Menu();
+	void Leaderboard();
 
 	bool mIsRunning;
 
@@ -46,5 +47,7 @@ private:
 	int mSpeed = 0;
 	int mScore = 0;
 	bool mGameStarted = false;
+	bool mOpenLeaderboard = false;
+	bool mAddScore = true;
 };
 

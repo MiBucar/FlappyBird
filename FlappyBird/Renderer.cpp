@@ -20,26 +20,14 @@ Renderer::Renderer(Player* player, Background* background, Pipes* pipes, const i
 		if (!mRenderer) {
 			std::cout << "Failed to create the renderer: " << SDL_GetError() << "\n";
 		}
-		mFont = TTF_OpenFont("font//Pixeled.ttf", 28);
+		mFont = TTF_OpenFont("font//PixelGosub.ttf", 28);
 		if (!mFont) {
 			std::cout << "Failed to create the font: " << SDL_GetError() << "\n";
 		}
 	}
 
 	mColorBrown = { 181, 127, 102 };
-	mPlayerTexture[PlayerTextures::FLYING] = IMG_LoadTexture(mRenderer, mPlayer->GetFlyingTexture().c_str());
-	mPlayerTexture[PlayerTextures::FALLING] = IMG_LoadTexture(mRenderer, mPlayer->GetFallingTexture().c_str());
-	mPipeTexture = IMG_LoadTexture(mRenderer, mPipes->GetPipe().c_str());
-	mPipeDownTexture = IMG_LoadTexture(mRenderer, mPipes->GetPipeDown().c_str());
-	mFloorTexture = IMG_LoadTexture(mRenderer, mBackground->GetFloorTexture().c_str());
-
-	mBackgroundTexture[BackgroundTextures::GAMEPLAY] = IMG_LoadTexture(mRenderer, mBackground->GetBackgroundTexture(BackgroundTextures::GAMEPLAY).c_str());
-	mBackgroundTexture[BackgroundTextures::MENU] = IMG_LoadTexture(mRenderer, mBackground->GetBackgroundTexture(BackgroundTextures::MENU).c_str());
-	mDeathScreenTexture = IMG_LoadTexture(mRenderer, mBackground->GetDeathScreenBackground().c_str());
-
-	mButtonTexture[Buttons::BTNPLAY] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(Buttons::BTNPLAY).c_str());
-	mButtonTexture[Buttons::BTNPLAY_AGAIN] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(Buttons::BTNPLAY_AGAIN).c_str());
-	mButtonTexture[Buttons::BTNHOME] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(Buttons::BTNHOME).c_str());
+	InitTextures();
 }
 
 Renderer::~Renderer()
@@ -59,6 +47,10 @@ Renderer::~Renderer()
 		SDL_DestroyTexture(mButtonTexture[i]); mButtonTexture[i] = nullptr;
 	}
 
+	for (int i = 0; i < EMPTYBTN; i++) {
+		SDL_DestroyTexture(mScreenTexture[i]); mScreenTexture[i] = nullptr;
+	}
+
 	for (int i = 0; i < EMPTYTEXT; i++) {
 		SDL_FreeSurface(mTextSurface[i]); mTextSurface[i] = nullptr;
 		SDL_DestroyTexture(mTextTexture[i]); mTextTexture[i] = nullptr;
@@ -67,7 +59,6 @@ Renderer::~Renderer()
 	SDL_DestroyTexture(mPipeTexture); mPipeTexture = nullptr;
 	SDL_DestroyTexture(mPipeDownTexture); mPipeDownTexture = nullptr;
 	SDL_DestroyTexture(mFloorTexture); mFloorTexture = nullptr;
-	SDL_DestroyTexture(mDeathScreenTexture); mDeathScreenTexture = nullptr;
 
 	mFont = nullptr; TTF_CloseFont(mFont);
 }
@@ -93,8 +84,8 @@ void Renderer::RenderMenu()
 
 	RenderBackground(MENU);
 	RenderFloor();
-	RenderButtons();
-
+	RenderButton(BTNPLAY);
+	RenderButton(BTNSCORE);
 }
 
 void Renderer::RenderPlayer(SDL_Texture* texture)
@@ -149,12 +140,11 @@ void Renderer::RenderBackground(BackgroundTextures texture)
 	SDL_RenderCopy(mRenderer, mBackgroundTexture[texture], &mSrc, mBackground->GetBackgroundRect());
 }
 
-void Renderer::RenderButtons()
+void Renderer::RenderButton(int btn)
 {
-	mSrc.w = mBackground->GetButtonRect(BTNPLAY)->w;
-	mSrc.h = mBackground->GetButtonRect(BTNPLAY)->h;
-
-	SDL_RenderCopy(mRenderer, mButtonTexture[BTNPLAY], &mSrc, mBackground->GetButtonRect(BTNPLAY));
+	mSrc.w = mBackground->GetButtonRect(btn)->w;
+	mSrc.h = mBackground->GetButtonRect(btn)->h;
+	SDL_RenderCopy(mRenderer, mButtonTexture[btn], &mSrc, mBackground->GetButtonRect(btn));
 }
 
 void Renderer::RenderText(int score)
@@ -167,22 +157,16 @@ void Renderer::RenderText(int score)
 
 void Renderer::RenderDeathScreen(int score, int highScore)
 {
-	mSrc.w = mBackground->GetDeathScreenRect()->w;
-	mSrc.h = mBackground->GetDeathScreenRect()->h;
+	mSrc.w = mBackground->GetScreenRect()->w;
+	mSrc.h = mBackground->GetScreenRect()->h;
+	SDL_RenderCopy(mRenderer, mScreenTexture[SCRDEATH], &mSrc, mBackground->GetScreenRect());
 
-	SDL_RenderCopy(mRenderer, mDeathScreenTexture, &mSrc, mBackground->GetDeathScreenRect());
-
-	mSrc.w = mBackground->GetButtonRect(BTNPLAY_AGAIN)->w;
-	mSrc.h = mBackground->GetButtonRect(BTNPLAY_AGAIN)->h;
-	SDL_RenderCopy(mRenderer, mButtonTexture[BTNPLAY_AGAIN], &mSrc, mBackground->GetButtonRect(BTNPLAY_AGAIN));
-
-	mSrc.w = mBackground->GetButtonRect(BTNHOME)->w;
-	mSrc.h = mBackground->GetButtonRect(BTNHOME)->h;
-	SDL_RenderCopy(mRenderer, mButtonTexture[BTNHOME], &mSrc, mBackground->GetButtonRect(BTNHOME));
+	RenderButton(BTNPLAY_AGAIN);
+	RenderButton(BTNHOME);
 
 	mText[TEXTSCOREDS] = std::to_string(score);
 	mTextSurface[TEXTSCOREDS] = TTF_RenderText_Solid(mFont, mText[TEXTSCOREDS].c_str(), mColorBrown);
-	mTextTexture[TEXTSCOREDS] = SDL_CreateTextureFromSurface(mRenderer, mTextSurface[TEXTSCOREGMP]);
+	mTextTexture[TEXTSCOREDS] = SDL_CreateTextureFromSurface(mRenderer, mTextSurface[TEXTSCOREDS]);
 	SDL_RenderCopy(mRenderer, mTextTexture[TEXTSCOREDS], &mSrc, mBackground->GetTextRect(TEXTSCOREDS));
 
 	mText[TEXTBEST] = std::to_string(highScore);
@@ -191,3 +175,53 @@ void Renderer::RenderDeathScreen(int score, int highScore)
 	SDL_RenderCopy(mRenderer, mTextTexture[TEXTBEST], &mSrc, mBackground->GetTextRect(TEXTBEST));
 }
 
+void Renderer::RenderScoresScreen(int arr[5])
+{
+	mSrc.w = mBackground->GetScreenRect()->w;
+	mSrc.h = mBackground->GetScreenRect()->h;
+	SDL_RenderCopy(mRenderer, mScreenTexture[SCRSCORES], &mSrc, mBackground->GetScreenRect());
+
+	mText[TEXT1] = std::to_string(arr[0]);
+	mTextSurface[TEXT1] = TTF_RenderText_Solid(mFont, mText[TEXT1].c_str(), mColorBrown);
+	mTextTexture[TEXT1] = SDL_CreateTextureFromSurface(mRenderer, mTextSurface[TEXT1]);
+	SDL_RenderCopy(mRenderer, mTextTexture[TEXT1], &mSrc, mBackground->GetTextRect(TEXT1));
+
+	mText[TEXT2] = std::to_string(arr[1]);
+	mTextSurface[TEXT2] = TTF_RenderText_Solid(mFont, mText[TEXT2].c_str(), mColorBrown);
+	mTextTexture[TEXT2] = SDL_CreateTextureFromSurface(mRenderer, mTextSurface[TEXT2]);
+	SDL_RenderCopy(mRenderer, mTextTexture[TEXT2], &mSrc, mBackground->GetTextRect(TEXT2));
+
+	mText[TEXT3] = std::to_string(arr[2]);
+	mTextSurface[TEXT3] = TTF_RenderText_Solid(mFont, mText[TEXT3].c_str(), mColorBrown);
+	mTextTexture[TEXT3] = SDL_CreateTextureFromSurface(mRenderer, mTextSurface[TEXT3]);
+	SDL_RenderCopy(mRenderer, mTextTexture[TEXT3], &mSrc, mBackground->GetTextRect(TEXT3));
+
+	mText[TEXT4] = std::to_string(arr[3]);
+	mTextSurface[TEXT4] = TTF_RenderText_Solid(mFont, mText[TEXT4].c_str(), mColorBrown);
+	mTextTexture[TEXT4] = SDL_CreateTextureFromSurface(mRenderer, mTextSurface[TEXT4]);
+	SDL_RenderCopy(mRenderer, mTextTexture[TEXT4], &mSrc, mBackground->GetTextRect(TEXT4));
+
+	mText[TEXT5] = std::to_string(arr[4]);
+	mTextSurface[TEXT5] = TTF_RenderText_Solid(mFont, mText[TEXT5].c_str(), mColorBrown);
+	mTextTexture[TEXT5] = SDL_CreateTextureFromSurface(mRenderer, mTextSurface[TEXT5]);
+	SDL_RenderCopy(mRenderer, mTextTexture[TEXT5], &mSrc, mBackground->GetTextRect(TEXT5));
+}
+
+void Renderer::InitTextures()
+{
+	mPlayerTexture[FLYING] = IMG_LoadTexture(mRenderer, mPlayer->GetFlyingTexture().c_str());
+	mPlayerTexture[FALLING] = IMG_LoadTexture(mRenderer, mPlayer->GetFallingTexture().c_str());
+	mPipeTexture = IMG_LoadTexture(mRenderer, mPipes->GetPipe().c_str());
+	mPipeDownTexture = IMG_LoadTexture(mRenderer, mPipes->GetPipeDown().c_str());
+	mFloorTexture = IMG_LoadTexture(mRenderer, mBackground->GetFloorTexture().c_str());
+
+	mBackgroundTexture[GAMEPLAY] = IMG_LoadTexture(mRenderer, mBackground->GetBackgroundTexture(GAMEPLAY).c_str());
+	mBackgroundTexture[MENU] = IMG_LoadTexture(mRenderer, mBackground->GetBackgroundTexture(MENU).c_str());
+	mScreenTexture[SCRDEATH] = IMG_LoadTexture(mRenderer, mBackground->GetScreenBackground(SCRDEATH).c_str());
+	mScreenTexture[SCRSCORES] = IMG_LoadTexture(mRenderer, mBackground->GetScreenBackground(SCRSCORES).c_str());
+
+	mButtonTexture[BTNPLAY] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNPLAY).c_str());
+	mButtonTexture[BTNSCORE] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNSCORE).c_str());
+	mButtonTexture[BTNPLAY_AGAIN] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNPLAY_AGAIN).c_str());
+	mButtonTexture[BTNHOME] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNHOME).c_str());
+}

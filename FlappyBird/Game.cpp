@@ -56,6 +56,9 @@ void Game::PollEvents()
 		}
 	}
 
+	const Uint8* state = SDL_GetKeyboardState(nullptr);
+	if (state[SDL_SCANCODE_ESCAPE]) mOpenLeaderboard = false;
+
 	int x, y;
 	SDL_GetMouseState(&x, &y);
 	mMousePos.x = x; mMousePos.y = y;
@@ -78,7 +81,13 @@ void Game::GameEvents()
 		}
 	}
 	else {
-		Menu();
+		if (!mOpenLeaderboard) {
+			Menu();
+		}
+		else {
+			Menu();
+			Leaderboard();
+		}
 	}
 
 	SDL_RenderPresent(mRenderer.GetRenderer());
@@ -100,11 +109,23 @@ void Game::Menu()
 	mRenderer.RenderMenu();
 }
 
+void Game::Leaderboard()
+{
+	int arr[5];
+	for (int i = 0; i < 5; i++) {
+		arr[i] = mData.GetTopFiveScores().at(mData.GetTopFiveScores().size() - (i + 1));
+	}
+	mRenderer.RenderScoresScreen(arr);
+}
+
 void Game::Died()
 {
 	if (mScore > mData.GetHighScore()) {
 		mData.SetHighScore(mScore);
 	}
+	if (mAddScore) mData.AddScore(mScore);
+	mAddScore = false;
+
 	mRenderer.RenderDeathScreen(mScore, mData.GetHighScore());
 }
 
@@ -115,6 +136,7 @@ void Game::StartGame()
 	mPlayer->Start();
 	mPipes->Start();
 	mScore = 0;
+	mAddScore = true;
 }
 
 void Game::HandleMouse(SDL_MouseButtonEvent btn)
@@ -124,6 +146,9 @@ void Game::HandleMouse(SDL_MouseButtonEvent btn)
 			if (CheckMousePos(BTNPLAY)) {
 				mGameStarted = true;
 				StartGame();
+			}
+			else if (CheckMousePos(BTNSCORE)) {
+				mOpenLeaderboard = true;
 			}
 		}
 		else {

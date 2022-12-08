@@ -17,6 +17,7 @@ public:
 	void RenderGameplay(int score);
 	void RenderMenu();
 	void RenderDeathScreen(int score, int highScore);
+	void RenderScoresScreen(int arr[5]);
 
 	// Getters
 	bool IsDead() const{ return mPlayer->IsDead(); };
@@ -28,8 +29,9 @@ private:
 	void RenderPipes();
 	void RenderFloor();
 	void RenderBackground(BackgroundTextures texture);
-	void RenderButtons();
+	void RenderButton(int btn);
 	void RenderText(int score);
+	void InitTextures();
 
 	SDL_Window* mWindow;
 	SDL_Renderer* mRenderer;
@@ -38,7 +40,7 @@ private:
 	SDL_Texture* mPipeDownTexture;
 	SDL_Texture* mFloorTexture;
 	SDL_Texture* mBackgroundTexture[EMPTYBCKG];
-	SDL_Texture* mDeathScreenTexture;
+	SDL_Texture* mScreenTexture[EMPTYSCR];
 	SDL_Texture* mButtonTexture[EMPTYBTN];
 	SDL_Rect mSrc;
 	SDL_Rect mPlayerAnimation[6];

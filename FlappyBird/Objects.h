@@ -32,6 +32,18 @@ namespace obj {
 		TEXTSCOREGMP,
 		TEXTSCOREDS,
 		TEXTBEST,
+		TEXT1,
+		TEXT2,
+		TEXT3,
+		TEXT4,
+		TEXT5,
 		EMPTYTEXT
+	};
+
+	enum Screens {
+		SCRDEATH,
+		SCRSCORES,
+		SCRSETTINGS,
+		EMPTYSCR
 	};
 }
