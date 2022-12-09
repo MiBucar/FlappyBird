@@ -11,9 +11,9 @@ class Data
 {
 public:
 	Data();
-	void SetHighScore(int highScore);
 	void AddScore(int score);
 	int GetHighScore();
+	void RestartScores();
 	std::vector<int> GetTopFiveScores();
 
 private:

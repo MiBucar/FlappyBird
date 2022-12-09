@@ -120,9 +120,6 @@ void Game::Leaderboard()
 
 void Game::Died()
 {
-	if (mScore > mData.GetHighScore()) {
-		mData.SetHighScore(mScore);
-	}
 	if (mAddScore) mData.AddScore(mScore);
 	mAddScore = false;
 
@@ -152,13 +149,20 @@ void Game::HandleMouse(SDL_MouseButtonEvent btn)
 			}
 		}
 		else {
-			if (CheckMousePos(BTNPLAY_AGAIN)) {
-				mGameStarted = true;
-				StartGame();
+			if (mOpenLeaderboard == true) {
+				if (CheckMousePos(BTNRESETSCORE)) {
+					mData.RestartScores();
+				}
 			}
-			else if (CheckMousePos(BTNHOME)) {
-				mGameStarted = false;
-			}
+			else {
+				if (CheckMousePos(BTNPLAY_AGAIN)) {
+					mGameStarted = true;
+					StartGame();
+				}
+				else if (CheckMousePos(BTNHOME)) {
+					mGameStarted = false;
+				}
+			}	
 		}
 	}
 }

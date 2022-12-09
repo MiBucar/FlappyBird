@@ -205,6 +205,8 @@ void Renderer::RenderScoresScreen(int arr[5])
 	mTextSurface[TEXT5] = TTF_RenderText_Solid(mFont, mText[TEXT5].c_str(), mColorBrown);
 	mTextTexture[TEXT5] = SDL_CreateTextureFromSurface(mRenderer, mTextSurface[TEXT5]);
 	SDL_RenderCopy(mRenderer, mTextTexture[TEXT5], &mSrc, mBackground->GetTextRect(TEXT5));
+
+	RenderButton(BTNRESETSCORE);
 }
 
 void Renderer::InitTextures()
@@ -224,4 +226,5 @@ void Renderer::InitTextures()
 	mButtonTexture[BTNSCORE] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNSCORE).c_str());
 	mButtonTexture[BTNPLAY_AGAIN] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNPLAY_AGAIN).c_str());
 	mButtonTexture[BTNHOME] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNHOME).c_str());
+	mButtonTexture[BTNRESETSCORE] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNRESETSCORE).c_str());
 }

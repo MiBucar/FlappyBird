@@ -26,6 +26,7 @@ void Background::InitButton()
 	mButtonTexture[BTNPLAY_AGAIN] = "images//PlayAgainButton.png";
 	mButtonTexture[BTNHOME] = "images//HomeButton.png";
 	mButtonTexture[BTNSCORE] = "images//ScoresButton.png";
+	mButtonTexture[BTNRESETSCORE] = "images//PlayAgainButton.png";
 
 	for (int i = 0; i < sizeof(mButtonRect) / sizeof(mButtonRect[0]); i++) {
 		mButtonRect[i].w = 160;
@@ -40,6 +41,7 @@ void Background::InitButton()
 	mButtonRect[BTNSCORE].x = centerLeft; mButtonRect[BTNSCORE].y = 400;
 	mButtonRect[BTNPLAY_AGAIN].x = centerRight; mButtonRect[BTNPLAY_AGAIN].y = 540;
 	mButtonRect[BTNHOME].x = centerLeft; mButtonRect[BTNHOME].y = 540;
+	mButtonRect[BTNRESETSCORE].x = center; mButtonRect[BTNRESETSCORE].y = mHeight / 2 + 175;
 }
 
 void Background::InitText()

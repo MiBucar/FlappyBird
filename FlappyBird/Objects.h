@@ -19,12 +19,12 @@ namespace obj {
 		BTNHOME,
 		BTNSCORE,
 		BTNSETTINGS,
+		BTNRESETSCORE,
 		EMPTYBTN
 	};
 
 	enum Files {
 		SCORES,
-		HIGH_SCORE,
 		EMPTYFILE
 	};
 
