@@ -140,29 +140,31 @@ void Game::HandleMouse(SDL_MouseButtonEvent btn)
 {
 	if (btn.button == SDL_BUTTON_LEFT) {
 		if (mGameStarted == false) {
-			if (CheckMousePos(BTNPLAY)) {
-				mGameStarted = true;
-				StartGame();
-			}
-			else if (CheckMousePos(BTNSCORE)) {
-				mOpenLeaderboard = true;
-			}
-		}
-		else {
 			if (mOpenLeaderboard == true) {
 				if (CheckMousePos(BTNRESETSCORE)) {
 					mData.RestartScores();
 				}
 			}
 			else {
-				if (CheckMousePos(BTNPLAY_AGAIN)) {
+				if (CheckMousePos(BTNPLAY)) {
 					mGameStarted = true;
 					StartGame();
 				}
-				else if (CheckMousePos(BTNHOME)) {
-					mGameStarted = false;
+				else if (CheckMousePos(BTNSCORE)) {
+					mOpenLeaderboard = true;
 				}
-			}	
+			}
+
+		}
+		else {
+			if (CheckMousePos(BTNPLAY_AGAIN)) {
+				mGameStarted = true;
+				StartGame();
+			}
+			else if (CheckMousePos(BTNHOME)) {
+				mGameStarted = false;
+			}
+			
 		}
 	}
 }

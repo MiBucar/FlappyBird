@@ -42,6 +42,11 @@ std::vector<int> Data::GetTopFiveScores()
 
 void Data::RestartScores()
 {
+	mFileO[SCORES].open("Data//Scores.txt");
+
+	mFileO[SCORES] << "0\n" << "0\n" << "0\n" << "0\n" << "0\n";
+
+	mFileO[SCORES].close();
 }
 
 void Data::Swap(int* a, int* b)
