@@ -17,12 +17,14 @@ public:
 	Renderer(Player* player, Background* background, Pipes* pipes, const int width, const int height);
 	~Renderer();
 
-	void RenderGameplay(int score, int musicLevel);
+	void RenderGameplay(int score);
 	void RenderMenu(int state);
 	void RenderDeathScreen(int score, int highScore);
 	void RenderScoresScreen(int arr[5]);
-	void RenderSettingsScreen(int musicLevel);
+	void RenderSettingsScreen(int musicLevel, int soundLevel);
 	void PlaySound(int id);
+	void ChangeMusicLevel(int lvl);
+	void ChangeSoundLevel(int lvl);
 
 	// Getters
 	bool IsDead() const{ return mPlayer->IsDead(); };
@@ -36,7 +38,7 @@ private:
 	void RenderBackground(BackgroundTextures texture);
 	void RenderButton(int btn);
 	void RenderText(int score);
-	void RenderAudioLevels(int musicLevel);
+	void RenderAudioLevels(int musicLevel, int type);
 	void InitTextures();
 	void InitAudio();
 
@@ -44,6 +46,7 @@ private:
 	SDL_Renderer* mRenderer;
 	SDL_Texture* mPlayerTexture[EMPTYPLY];
 	SDL_Texture* mMusicLevelsTexture;
+	SDL_Texture* mSoundLevelsTexture;
 	SDL_Texture* mPipeTexture;
 	SDL_Texture* mPipeDownTexture;
 	SDL_Texture* mFloorTexture;

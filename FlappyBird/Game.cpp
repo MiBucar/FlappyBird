@@ -114,7 +114,7 @@ void Game::Playing()
 
 	CheckCollisions();
 
-	mRenderer.RenderGameplay(mScore, mData.GetMusicLevel());
+	mRenderer.RenderGameplay(mScore);
 }
 
 void Game::Menu(int state)
@@ -133,12 +133,17 @@ void Game::Leaderboard()
 
 void Game::Settings()
 {
-	mRenderer.RenderSettingsScreen(mData.GetMusicLevel());
+	// Get the current audio level for both music and sound
+	mRenderer.RenderSettingsScreen(mData.GetAudioLevel(TYPEMUSIC), mData.GetAudioLevel(TYPESOUND));
 }
 
 void Game::Died()
 {
-	if (mAddScore) mData.AddScore(mScore);
+	if (mAddScore) {
+		mData.AddScore(mScore);
+		mRenderer.PlaySound(SOUNDDIE);
+	}
+
 	mAddScore = false;
 
 	mRenderer.RenderDeathScreen(mScore, mData.GetHighScore());
@@ -166,13 +171,25 @@ void Game::HandleMouse(SDL_MouseButtonEvent btn)
 				}
 			}
 			if (mOpenSettings == true) {
-				if (CheckMousePos(BTNLEFTVOLUME)) {
+				if (CheckMousePos(BTNLEFTVOLUME_ONE)) {
 					mRenderer.PlaySound(SOUNDBUTTON);
-					mData.ChangeMusic(-1);
+					mData.ChangeAudio(-1, TYPEMUSIC);
+					mRenderer.ChangeMusicLevel(mData.GetAudioLevel(TYPEMUSIC));
 				}
-				if (CheckMousePos(BTNRIGHTVOLUME)) {
+				if (CheckMousePos(BTNRIGHTVOLUME_ONE)) {
 					mRenderer.PlaySound(SOUNDBUTTON);
-					mData.ChangeMusic(1);
+					mData.ChangeAudio(1, TYPEMUSIC);
+					mRenderer.ChangeMusicLevel(mData.GetAudioLevel(TYPEMUSIC));
+				}
+				if (CheckMousePos(BTNLEFTVOLUME_TWO)) {
+					mRenderer.PlaySound(SOUNDBUTTON);
+					mData.ChangeAudio(-1, TYPESOUND);
+					mRenderer.ChangeSoundLevel(mData.GetAudioLevel(TYPESOUND));
+				}
+				if (CheckMousePos(BTNRIGHTVOLUME_TWO)) {
+					mRenderer.PlaySound(SOUNDBUTTON);
+					mData.ChangeAudio(1, TYPESOUND);
+					mRenderer.ChangeSoundLevel(mData.GetAudioLevel(TYPESOUND));
 				}
 			}
 			else if (mOpenLeaderboard != true && mOpenSettings != true) {

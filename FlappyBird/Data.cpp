@@ -2,7 +2,6 @@
 
 Data::Data()
 {
-	GetMusicLevel();
 }
 
 int Data::GetHighScore()
@@ -50,37 +49,50 @@ void Data::RestartScores()
 	mFileO[FILESCORES].close();
 }
 
-void Data::ChangeMusic(int lvl)
+void Data::ChangeAudio(int lvl, int type)
 {
-	int currentLevel = GetMusicLevel();
-	mFileO[FILESAUDIO].open("data//Audio.txt");
+	int currentLevel;
 
+	if (type == TYPEMUSIC) {
+		currentLevel = GetAudioLevel(TYPEMUSIC);
+		mFileO[FILESAUDIO].open("data//MusicVolume.txt");
+	}
+	else if (type == TYPESOUND) {
+		currentLevel = GetAudioLevel(TYPESOUND);
+		mFileO[FILESAUDIO].open("data//SoundVolume.txt");
+	}
+	
 	// INCREASE MUSIC
 	if (lvl == 1) {
 		if (currentLevel == 21) {
-			mFileO[FILESAUDIO] << "Music volume: " << 21 << "\n";
+			mFileO[FILESAUDIO] << "Volume: " << 21 << "\n";
 		}
 		else {
-			mFileO[FILESAUDIO] << "Music volume: " << currentLevel +  3 << "\n";
+			mFileO[FILESAUDIO] << "Volume: " << currentLevel +  3 << "\n";
 		}
 	}
 
 	// DECREASE MUSIC
 	else if (lvl == -1) {
 		if (currentLevel == 0) {
-			mFileO[FILESAUDIO] << "Music volume: " << 0 << "\n";
+			mFileO[FILESAUDIO] << "Volume: " << 0 << "\n";
 		}
 		else {
-			mFileO[FILESAUDIO] << "Music volume: " << currentLevel - 3 << "\n";
+			mFileO[FILESAUDIO] << "Volume: " << currentLevel - 3 << "\n";
 		}
 	}
 
 	mFileO[FILESAUDIO].close();
 }
 
-int Data::GetMusicLevel()
+int Data::GetAudioLevel(int type)
 {
-	mFileI[FILESAUDIO].open("data//Audio.txt");
+	if (type == TYPEMUSIC) {
+		mFileI[FILESAUDIO].open("data//MusicVolume.txt");
+	}
+	else if (type == TYPESOUND) {
+		mFileI[FILESAUDIO].open("data//SoundVolume.txt");
+	}
 
 	std::string line;
 	std::getline(mFileI[FILESAUDIO], line);

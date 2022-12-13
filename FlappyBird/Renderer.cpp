@@ -51,7 +51,7 @@ Renderer::~Renderer()
 		SDL_DestroyTexture(mButtonTexture[i]); mButtonTexture[i] = nullptr;
 	}
 
-	for (int i = 0; i < EMPTYBTN; i++) {
+	for (int i = 0; i < EMPTYSCR; i++) {
 		SDL_DestroyTexture(mScreenTexture[i]); mScreenTexture[i] = nullptr;
 	}
 
@@ -69,6 +69,7 @@ Renderer::~Renderer()
 	}
 
 	SDL_DestroyTexture(mMusicLevelsTexture); mMusicLevelsTexture = nullptr;
+	SDL_DestroyTexture(mSoundLevelsTexture); mSoundLevelsTexture = nullptr;
 	SDL_DestroyTexture(mPipeTexture); mPipeTexture = nullptr;
 	SDL_DestroyTexture(mPipeDownTexture); mPipeDownTexture = nullptr;
 	SDL_DestroyTexture(mFloorTexture); mFloorTexture = nullptr;
@@ -78,7 +79,7 @@ Renderer::~Renderer()
 
 // Public Functions
 
-void Renderer::RenderGameplay(int score, int musicLevel)
+void Renderer::RenderGameplay(int score)
 {
 	RenderBackground(GAMEPLAY);
 	RenderPipes();
@@ -90,7 +91,6 @@ void Renderer::RenderGameplay(int score, int musicLevel)
 	}
 	RenderFloor();
 
-	Mix_VolumeMusic(musicLevel);
 	if (Mix_PlayingMusic() == 0 || Mix_PausedMusic() == 1) {
 		Mix_PlayMusic(mMusic[MUSICGAME], -1);
 	}
@@ -163,20 +163,35 @@ void Renderer::RenderScoresScreen(int arr[5])
 	RenderButton(BTNRESETSCORE);
 }
 
-void Renderer::RenderSettingsScreen(int musicLevel)
+void Renderer::RenderSettingsScreen(int musicLevel, int soundLevel)
 {
 	mSrc.w = mBackground->GetScreenRect()->w;
 	mSrc.h = mBackground->GetScreenRect()->h;
 	SDL_RenderCopy(mRenderer, mScreenTexture[SCRSETTINGS], &mSrc, mBackground->GetScreenRect());
 
-	RenderAudioLevels(musicLevel);
-	RenderButton(BTNLEFTVOLUME);
-	RenderButton(BTNRIGHTVOLUME);
+	// Depending on the level, render that many columns
+	RenderAudioLevels(musicLevel, TYPEMUSIC);
+	RenderAudioLevels(soundLevel, TYPESOUND);
+
+	RenderButton(BTNLEFTVOLUME_ONE);
+	RenderButton(BTNRIGHTVOLUME_ONE);
+	RenderButton(BTNLEFTVOLUME_TWO);
+	RenderButton(BTNRIGHTVOLUME_TWO);
 }
 
 void Renderer::PlaySound(int id)
 {
 	Mix_PlayChannel(-1, mSound[id], 0);
+}
+
+void Renderer::ChangeMusicLevel(int lvl)
+{
+	Mix_VolumeMusic(lvl);
+}
+
+void Renderer::ChangeSoundLevel(int lvl)
+{
+	Mix_Volume(-1, lvl);
 }
 
 // Private functions
@@ -202,9 +217,10 @@ void Renderer::RenderPlayer(SDL_Texture* texture)
 	SDL_RenderCopy(mRenderer, texture, &mPlayerAnimation[frameToDraw], mPlayer->GetRect());
 }
 
-void Renderer::RenderAudioLevels(int musicLevel)
+void Renderer::RenderAudioLevels(int musicLevel, int type)
 {
 	int frame = 0;
+	SDL_Rect dest;
 
 	switch (musicLevel)
 	{
@@ -236,12 +252,19 @@ void Renderer::RenderAudioLevels(int musicLevel)
 		break;
 	}
 
+	if (type == TYPEMUSIC) {
+		dest = mAudio.GetMusicLevelRect();
+	}
+	else if (type == TYPESOUND) {
+		dest = mAudio.GetSoundLevelRect();
+	}
+
 	mAudioLevelAnimation.x = frame;
 	mAudioLevelAnimation.y = 0;
 	mAudioLevelAnimation.w = 250;
 	mAudioLevelAnimation.h = 50;
 
-	SDL_RenderCopy(mRenderer, mMusicLevelsTexture, &mAudioLevelAnimation, mAudio.GetAudioLevelRect());
+	SDL_RenderCopy(mRenderer, mMusicLevelsTexture, &mAudioLevelAnimation, &dest);
 }
 
 void Renderer::RenderPipes()
@@ -292,6 +315,7 @@ void Renderer::InitTextures()
 	mPlayerTexture[FLYING] = IMG_LoadTexture(mRenderer, mPlayer->GetFlyingTexture().c_str());
 	mPlayerTexture[FALLING] = IMG_LoadTexture(mRenderer, mPlayer->GetFallingTexture().c_str());
 	mMusicLevelsTexture = IMG_LoadTexture(mRenderer, mAudio.GetAudioLevelsTexture().c_str());
+	mSoundLevelsTexture = IMG_LoadTexture(mRenderer, mAudio.GetAudioLevelsTexture().c_str());
 	mPipeTexture = IMG_LoadTexture(mRenderer, mPipes->GetPipe().c_str());
 	mPipeDownTexture = IMG_LoadTexture(mRenderer, mPipes->GetPipeDown().c_str());
 	mFloorTexture = IMG_LoadTexture(mRenderer, mBackground->GetFloorTexture().c_str());
@@ -308,12 +332,15 @@ void Renderer::InitTextures()
 	mButtonTexture[BTNHOME] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNHOME).c_str());
 	mButtonTexture[BTNRESETSCORE] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNRESETSCORE).c_str());
 	mButtonTexture[BTNSETTINGS] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNSETTINGS).c_str());
-	mButtonTexture[BTNRIGHTVOLUME] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNRIGHTVOLUME).c_str());
-	mButtonTexture[BTNLEFTVOLUME] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNLEFTVOLUME).c_str());
+	mButtonTexture[BTNRIGHTVOLUME_ONE] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNRIGHTVOLUME_ONE).c_str());
+	mButtonTexture[BTNLEFTVOLUME_ONE] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNLEFTVOLUME_ONE).c_str());
+	mButtonTexture[BTNRIGHTVOLUME_TWO] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNRIGHTVOLUME_TWO).c_str());
+	mButtonTexture[BTNLEFTVOLUME_TWO] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNLEFTVOLUME_TWO).c_str());
 }
 
 void Renderer::InitAudio()
 {
 	mSound[SOUNDBUTTON] = Mix_LoadWAV(mAudio.GetSound(SOUNDBUTTON).c_str());
+	mSound[SOUNDDIE] = Mix_LoadWAV(mAudio.GetSound(SOUNDDIE).c_str());
 	mMusic[MUSICGAME] = Mix_LoadMUS(mAudio.GetMusic(MUSICGAME).c_str());
 }

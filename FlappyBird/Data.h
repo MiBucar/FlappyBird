@@ -15,8 +15,8 @@ public:
 	int GetHighScore();
 	void RestartScores();
 
-	void ChangeMusic(int lvl);
-	int GetMusicLevel();
+	void ChangeAudio(int lvl, int type);
+	int GetAudioLevel(int type);
 
 	std::vector<int> GetTopFiveScores();
 

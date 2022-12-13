@@ -29,8 +29,10 @@ void Background::InitButton()
 	mButtonTexture[BTNSCORE] = "images//ScoresButton.png";
 	mButtonTexture[BTNRESETSCORE] = "images//PlayAgainButton.png";
 	mButtonTexture[BTNSETTINGS] = "images//SettingsButton.png";
-	mButtonTexture[BTNRIGHTVOLUME] = "images//RightVolumeButton.png";
-	mButtonTexture[BTNLEFTVOLUME] = "images//LeftVolumeButton.png";
+	mButtonTexture[BTNRIGHTVOLUME_ONE] = "images//RightVolumeButton.png";
+	mButtonTexture[BTNLEFTVOLUME_ONE] = "images//LeftVolumeButton.png";
+	mButtonTexture[BTNRIGHTVOLUME_TWO] = "images//RightVolumeButton.png";
+	mButtonTexture[BTNLEFTVOLUME_TWO] = "images//LeftVolumeButton.png";
 
 	for (int i = 0; i < sizeof(mButtonRect) / sizeof(mButtonRect[0]); i++) {
 		mButtonRect[i].w = 160;
@@ -48,12 +50,20 @@ void Background::InitButton()
 	mButtonRect[BTNRESETSCORE].x = center; mButtonRect[BTNRESETSCORE].y = mHeight / 2 + 175;
 	mButtonRect[BTNSETTINGS].x = center; mButtonRect[BTNSETTINGS].y = mHeight / 2 + 150;
 
-	mButtonRect[BTNLEFTVOLUME] = {
+	mButtonRect[BTNLEFTVOLUME_ONE] = {
 		mWidth / 2 - 190, 310, 60, 50
 	};
 
-	mButtonRect[BTNRIGHTVOLUME] = {
+	mButtonRect[BTNRIGHTVOLUME_ONE] = {
 		mWidth / 2 + 130, 310, 60, 50
+	};
+
+	mButtonRect[BTNLEFTVOLUME_TWO] = {
+		mWidth / 2 - 190, 420, 60, 50
+	};
+
+	mButtonRect[BTNRIGHTVOLUME_TWO] = {
+		mWidth / 2 + 130, 420, 60, 50
 	};
 }
 
