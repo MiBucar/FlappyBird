@@ -1,15 +1,18 @@
 #include "Renderer.h"
 
-Renderer::Renderer(Player* player, Background* background, Pipes* pipes, const int width, const int height) : mPlayer(player), mPipes(pipes), mBackground(background), mWidth(width), mHeight(height), mWindow(nullptr), mRenderer(nullptr), mSrc{ 0, 0, 0, 0 }, mStartTime(SDL_GetTicks()), mMousePos{0, 0} {
+Renderer::Renderer(Player* player, Background* background, Pipes* pipes, const int width, const int height) : mPlayer(player), mPipes(pipes), mBackground(background), mWidth(width), mHeight(height), mWindow(nullptr), mRenderer(nullptr), mSrc{ 0, 0, 0, 0 }, mStartTime(SDL_GetTicks()), mMousePos{0, 0}, mAudio(mWidth, mHeight){
 
-	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-		std::cout << "Failed to init the video: " << SDL_GetError() << "\n";
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
+		std::cout << "Failed to init the video/audio: " << SDL_GetError() << "\n";
 	}
 	if (!IMG_Init(IMG_INIT_PNG)) {
 		std::cout << "Failed to init the image: " << SDL_GetError() << "\n";
 	}
 	if (TTF_Init() == -1) {
 		std::cout << "Failed to init the image: " << SDL_GetError() << "\n";
+	}
+	if (Mix_OpenAudio(4410, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+		std::cout << "Failed to init the mixer: " << SDL_GetError() << "\n";
 	}
 	else {
 		mWindow = SDL_CreateWindow("Flappy Bird", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, mWidth, mHeight, 0);
@@ -28,6 +31,7 @@ Renderer::Renderer(Player* player, Background* background, Pipes* pipes, const i
 
 	mColorBrown = { 181, 127, 102 };
 	InitTextures();
+	InitAudio();
 }
 
 Renderer::~Renderer()
@@ -56,6 +60,15 @@ Renderer::~Renderer()
 		SDL_DestroyTexture(mTextTexture[i]); mTextTexture[i] = nullptr;
 	}
 
+	for (int i = 0; i < EMPTYSOUND; i++) {
+		Mix_FreeChunk(mSound[i]); mSound[i] = nullptr;
+	}
+
+	for (int i = 0; i < EMPTYMUSIC; i++) {
+		Mix_FreeMusic(mMusic[i]); mMusic[i] = nullptr;
+	}
+
+	SDL_DestroyTexture(mMusicLevelsTexture); mMusicLevelsTexture = nullptr;
 	SDL_DestroyTexture(mPipeTexture); mPipeTexture = nullptr;
 	SDL_DestroyTexture(mPipeDownTexture); mPipeDownTexture = nullptr;
 	SDL_DestroyTexture(mFloorTexture); mFloorTexture = nullptr;
@@ -63,10 +76,9 @@ Renderer::~Renderer()
 	mFont = nullptr; TTF_CloseFont(mFont);
 }
 
-// Functions
+// Public Functions
 
-
-void Renderer::RenderGameplay(int score)
+void Renderer::RenderGameplay(int score, int musicLevel)
 {
 	RenderBackground(GAMEPLAY);
 	RenderPipes();
@@ -77,82 +89,24 @@ void Renderer::RenderGameplay(int score)
 		RenderPlayer(mPlayerTexture[FLYING]);
 	}
 	RenderFloor();
+
+	Mix_VolumeMusic(musicLevel);
+	if (Mix_PlayingMusic() == 0 || Mix_PausedMusic() == 1) {
+		Mix_PlayMusic(mMusic[MUSICGAME], -1);
+	}
 }
 
-void Renderer::RenderMenu()
+void Renderer::RenderMenu(int state)
 {
 
 	RenderBackground(MENU);
 	RenderFloor();
-	RenderButton(BTNPLAY);
-	RenderButton(BTNSCORE);
-}
 
-void Renderer::RenderPlayer(SDL_Texture* texture)
-{
-	int animationLength = 6;
-	int animationRate = 5;
-
-	mPlayerAnimation[0].x = 0;
-	mPlayerAnimation[0].y = 0;
-	mPlayerAnimation[0].h = 50;
-	mPlayerAnimation[0].w = 50;
-
-	for (int i = 1; i < 6; i++) {
-		mPlayerAnimation[i].x = 50 * i;
-		mPlayerAnimation[i].y = 0;
-		mPlayerAnimation[i].h = 50;
-		mPlayerAnimation[i].w = 50;
+	if (state == 1) {
+		RenderButton(BTNPLAY);
+		RenderButton(BTNSCORE);
+		RenderButton(BTNSETTINGS);
 	}
-
-	mSrc.w = mPlayer->GetRect()->w;
-	mSrc.w = mPlayer->GetRect()->h;
-
-	int frameToDraw = ((SDL_GetTicks() - mStartTime) * animationRate / 1000) % animationLength;
-	SDL_RenderCopy(mRenderer, texture, &mPlayerAnimation[frameToDraw], mPlayer->GetRect());
-}
-
-void Renderer::RenderPipes()
-{
-	mSrc.w = mPipes->GetPipeRect(0)->w;
-	mSrc.h = mPipes->GetPipeRect(0)->h;
-
-	for (int i = 0; i < mPipes->GetSize(); i++) {
-		SDL_RenderCopy(mRenderer, mPipeTexture, &mSrc, mPipes->GetPipeRect(i));
-
-		SDL_RenderCopy(mRenderer, mPipeDownTexture, &mSrc, mPipes->GetPipeDown(i));
-	}
-}
-
-void Renderer::RenderFloor()
-{
-	mSrc.w = mBackground->GetFloorRect()->w;
-	mSrc.h = mBackground->GetFloorRect()->h;
-
-	SDL_RenderCopy(mRenderer, mFloorTexture, &mSrc, mBackground->GetFloorRect());
-}
-
-void Renderer::RenderBackground(BackgroundTextures texture)
-{
-	mSrc.w = mBackground->GetBackgroundRect()->w;
-	mSrc.h = mBackground->GetBackgroundRect()->h;
-
-	SDL_RenderCopy(mRenderer, mBackgroundTexture[texture], &mSrc, mBackground->GetBackgroundRect());
-}
-
-void Renderer::RenderButton(int btn)
-{
-	mSrc.w = mBackground->GetButtonRect(btn)->w;
-	mSrc.h = mBackground->GetButtonRect(btn)->h;
-	SDL_RenderCopy(mRenderer, mButtonTexture[btn], &mSrc, mBackground->GetButtonRect(btn));
-}
-
-void Renderer::RenderText(int score)
-{
-	mText[TEXTSCOREGMP] = std::to_string(score);
-	mTextSurface[TEXTSCOREGMP] = TTF_RenderText_Solid(mFont, mText[TEXTSCOREGMP].c_str(), mColorBrown);
-	mTextTexture[TEXTSCOREGMP] = SDL_CreateTextureFromSurface(mRenderer, mTextSurface[TEXTSCOREGMP]);
-	SDL_RenderCopy(mRenderer, mTextTexture[TEXTSCOREGMP], &mSrc, mBackground->GetTextRect(TEXTSCOREGMP));
 }
 
 void Renderer::RenderDeathScreen(int score, int highScore)
@@ -209,10 +163,135 @@ void Renderer::RenderScoresScreen(int arr[5])
 	RenderButton(BTNRESETSCORE);
 }
 
+void Renderer::RenderSettingsScreen(int musicLevel)
+{
+	mSrc.w = mBackground->GetScreenRect()->w;
+	mSrc.h = mBackground->GetScreenRect()->h;
+	SDL_RenderCopy(mRenderer, mScreenTexture[SCRSETTINGS], &mSrc, mBackground->GetScreenRect());
+
+	RenderAudioLevels(musicLevel);
+	RenderButton(BTNLEFTVOLUME);
+	RenderButton(BTNRIGHTVOLUME);
+}
+
+void Renderer::PlaySound(int id)
+{
+	Mix_PlayChannel(-1, mSound[id], 0);
+}
+
+// Private functions
+
+void Renderer::RenderPlayer(SDL_Texture* texture)
+{
+	int animationLength = 6;
+	int animationRate = 5;
+
+	mPlayerAnimation[0].x = 0;
+	mPlayerAnimation[0].y = 0;
+	mPlayerAnimation[0].h = 50;
+	mPlayerAnimation[0].w = 50;
+
+	for (int i = 1; i < 6; i++) {
+		mPlayerAnimation[i].x = 50 * i;
+		mPlayerAnimation[i].y = 0;
+		mPlayerAnimation[i].h = 50;
+		mPlayerAnimation[i].w = 50;
+	}
+
+	int frameToDraw = ((SDL_GetTicks() - mStartTime) * animationRate / 1000) % animationLength;
+	SDL_RenderCopy(mRenderer, texture, &mPlayerAnimation[frameToDraw], mPlayer->GetRect());
+}
+
+void Renderer::RenderAudioLevels(int musicLevel)
+{
+	int frame = 0;
+
+	switch (musicLevel)
+	{
+	case 21:
+		frame = 0;
+		break;
+	case 18:
+		frame = 250;
+		break;
+	case 15:
+		frame = 500;
+		break;
+	case 12:
+		frame = 750;
+		break;
+	case 9:
+		frame = 1000;
+		break;
+	case 6:
+		frame = 1250;
+		break;
+	case 3:
+		frame = 1500;
+		break;
+	case 0:
+		frame = 1750;
+		break;
+	default:
+		break;
+	}
+
+	mAudioLevelAnimation.x = frame;
+	mAudioLevelAnimation.y = 0;
+	mAudioLevelAnimation.w = 250;
+	mAudioLevelAnimation.h = 50;
+
+	SDL_RenderCopy(mRenderer, mMusicLevelsTexture, &mAudioLevelAnimation, mAudio.GetAudioLevelRect());
+}
+
+void Renderer::RenderPipes()
+{
+	mSrc.w = mPipes->GetPipeRect(0)->w;
+	mSrc.h = mPipes->GetPipeRect(0)->h;
+
+	for (int i = 0; i < mPipes->GetSize(); i++) {
+		SDL_RenderCopy(mRenderer, mPipeTexture, &mSrc, mPipes->GetPipeRect(i));
+
+		SDL_RenderCopy(mRenderer, mPipeDownTexture, &mSrc, mPipes->GetPipeDown(i));
+	}
+}
+
+void Renderer::RenderFloor()
+{
+	mSrc.w = mBackground->GetFloorRect()->w;
+	mSrc.h = mBackground->GetFloorRect()->h;
+
+	SDL_RenderCopy(mRenderer, mFloorTexture, &mSrc, mBackground->GetFloorRect());
+}
+
+void Renderer::RenderBackground(BackgroundTextures texture)
+{
+	mSrc.w = mBackground->GetBackgroundRect()->w;
+	mSrc.h = mBackground->GetBackgroundRect()->h;
+
+	SDL_RenderCopy(mRenderer, mBackgroundTexture[texture], &mSrc, mBackground->GetBackgroundRect());
+}
+
+void Renderer::RenderButton(int btn)
+{
+	mSrc.w = mBackground->GetButtonRect(btn)->w;
+	mSrc.h = mBackground->GetButtonRect(btn)->h;
+	SDL_RenderCopy(mRenderer, mButtonTexture[btn], &mSrc, mBackground->GetButtonRect(btn));
+}
+
+void Renderer::RenderText(int score)
+{
+	mText[TEXTSCOREGMP] = std::to_string(score);
+	mTextSurface[TEXTSCOREGMP] = TTF_RenderText_Solid(mFont, mText[TEXTSCOREGMP].c_str(), mColorBrown);
+	mTextTexture[TEXTSCOREGMP] = SDL_CreateTextureFromSurface(mRenderer, mTextSurface[TEXTSCOREGMP]);
+	SDL_RenderCopy(mRenderer, mTextTexture[TEXTSCOREGMP], &mSrc, mBackground->GetTextRect(TEXTSCOREGMP));
+}
+
 void Renderer::InitTextures()
 {
 	mPlayerTexture[FLYING] = IMG_LoadTexture(mRenderer, mPlayer->GetFlyingTexture().c_str());
 	mPlayerTexture[FALLING] = IMG_LoadTexture(mRenderer, mPlayer->GetFallingTexture().c_str());
+	mMusicLevelsTexture = IMG_LoadTexture(mRenderer, mAudio.GetAudioLevelsTexture().c_str());
 	mPipeTexture = IMG_LoadTexture(mRenderer, mPipes->GetPipe().c_str());
 	mPipeDownTexture = IMG_LoadTexture(mRenderer, mPipes->GetPipeDown().c_str());
 	mFloorTexture = IMG_LoadTexture(mRenderer, mBackground->GetFloorTexture().c_str());
@@ -221,10 +300,20 @@ void Renderer::InitTextures()
 	mBackgroundTexture[MENU] = IMG_LoadTexture(mRenderer, mBackground->GetBackgroundTexture(MENU).c_str());
 	mScreenTexture[SCRDEATH] = IMG_LoadTexture(mRenderer, mBackground->GetScreenBackground(SCRDEATH).c_str());
 	mScreenTexture[SCRSCORES] = IMG_LoadTexture(mRenderer, mBackground->GetScreenBackground(SCRSCORES).c_str());
+	mScreenTexture[SCRSETTINGS] = IMG_LoadTexture(mRenderer, mBackground->GetScreenBackground(SCRSETTINGS).c_str());
 
 	mButtonTexture[BTNPLAY] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNPLAY).c_str());
 	mButtonTexture[BTNSCORE] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNSCORE).c_str());
 	mButtonTexture[BTNPLAY_AGAIN] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNPLAY_AGAIN).c_str());
 	mButtonTexture[BTNHOME] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNHOME).c_str());
 	mButtonTexture[BTNRESETSCORE] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNRESETSCORE).c_str());
+	mButtonTexture[BTNSETTINGS] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNSETTINGS).c_str());
+	mButtonTexture[BTNRIGHTVOLUME] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNRIGHTVOLUME).c_str());
+	mButtonTexture[BTNLEFTVOLUME] = IMG_LoadTexture(mRenderer, mBackground->GetButtonTexture(BTNLEFTVOLUME).c_str());
+}
+
+void Renderer::InitAudio()
+{
+	mSound[SOUNDBUTTON] = Mix_LoadWAV(mAudio.GetSound(SOUNDBUTTON).c_str());
+	mMusic[MUSICGAME] = Mix_LoadMUS(mAudio.GetMusic(MUSICGAME).c_str());
 }

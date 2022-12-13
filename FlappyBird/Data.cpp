@@ -2,6 +2,7 @@
 
 Data::Data()
 {
+	GetMusicLevel();
 }
 
 int Data::GetHighScore()
@@ -14,19 +15,19 @@ int Data::GetHighScore()
 
 void Data::AddScore(int score)
 {
-	mFileO[SCORES].open("Data//Scores.txt", std::ios::app);
-	mFileO[SCORES] << score << "\n";
-	mFileO[SCORES].close();
+	mFileO[FILESCORES].open("Data//Scores.txt", std::ios::app);
+	mFileO[FILESCORES] << score << "\n";
+	mFileO[FILESCORES].close();
 }
 
 std::vector<int> Data::GetTopFiveScores()
 {
-	mFileI[SCORES].open("Data//Scores.txt");
+	mFileI[FILESCORES].open("Data//Scores.txt");
 
 	std::string line;
 	std::vector<int> arr;
 
-	while (std::getline(mFileI[SCORES], line)) {
+	while (std::getline(mFileI[FILESCORES], line)) {
 		int num;
 		std::stringstream ss;
 		ss << line;
@@ -36,17 +37,64 @@ std::vector<int> Data::GetTopFiveScores()
 
 	QuickSort(arr, 0, arr.size() - 1);
 	
-	mFileI[SCORES].close();
+	mFileI[FILESCORES].close();
 	return arr;
 }
 
 void Data::RestartScores()
 {
-	mFileO[SCORES].open("Data//Scores.txt");
+	mFileO[FILESCORES].open("data//Scores.txt");
 
-	mFileO[SCORES] << "0\n" << "0\n" << "0\n" << "0\n" << "0\n";
+	mFileO[FILESCORES] << "0\n" << "0\n" << "0\n" << "0\n" << "0\n";
 
-	mFileO[SCORES].close();
+	mFileO[FILESCORES].close();
+}
+
+void Data::ChangeMusic(int lvl)
+{
+	int currentLevel = GetMusicLevel();
+	mFileO[FILESAUDIO].open("data//Audio.txt");
+
+	// INCREASE MUSIC
+	if (lvl == 1) {
+		if (currentLevel == 21) {
+			mFileO[FILESAUDIO] << "Music volume: " << 21 << "\n";
+		}
+		else {
+			mFileO[FILESAUDIO] << "Music volume: " << currentLevel +  3 << "\n";
+		}
+	}
+
+	// DECREASE MUSIC
+	else if (lvl == -1) {
+		if (currentLevel == 0) {
+			mFileO[FILESAUDIO] << "Music volume: " << 0 << "\n";
+		}
+		else {
+			mFileO[FILESAUDIO] << "Music volume: " << currentLevel - 3 << "\n";
+		}
+	}
+
+	mFileO[FILESAUDIO].close();
+}
+
+int Data::GetMusicLevel()
+{
+	mFileI[FILESAUDIO].open("data//Audio.txt");
+
+	std::string line;
+	std::getline(mFileI[FILESAUDIO], line);
+
+	std::size_t found = line.find_last_of(" ");
+	std::string numLine = line.substr(found + 1);
+
+	int num;
+	std::stringstream ss;
+	ss << numLine;
+	ss >> num;
+
+	mFileI[FILESAUDIO].close();
+	return num;
 }
 
 void Data::Swap(int* a, int* b)

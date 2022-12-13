@@ -20,11 +20,14 @@ namespace obj {
 		BTNSCORE,
 		BTNSETTINGS,
 		BTNRESETSCORE,
+		BTNRIGHTVOLUME,
+		BTNLEFTVOLUME,
 		EMPTYBTN
 	};
 
 	enum Files {
-		SCORES,
+		FILESCORES,
+		FILESAUDIO,
 		EMPTYFILE
 	};
 
@@ -45,5 +48,15 @@ namespace obj {
 		SCRSCORES,
 		SCRSETTINGS,
 		EMPTYSCR
+	};
+
+	enum Sound {
+		SOUNDBUTTON,
+		EMPTYSOUND
+	};
+
+	enum Music {
+		MUSICGAME,
+		EMPTYMUSIC
 	};
 }

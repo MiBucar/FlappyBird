@@ -17,6 +17,7 @@ Game::~Game()
 	TTF_Quit();
 	IMG_Quit();
 	SDL_Quit();
+	Mix_Quit();
 }
 
 int Game::Run()
@@ -57,17 +58,22 @@ void Game::PollEvents()
 	}
 
 	const Uint8* state = SDL_GetKeyboardState(nullptr);
-	if (state[SDL_SCANCODE_ESCAPE]) mOpenLeaderboard = false;
+	if (state[SDL_SCANCODE_ESCAPE]) {
+		mOpenLeaderboard = false;
+		mOpenSettings = false;
+	}
 
 	int x, y;
 	SDL_GetMouseState(&x, &y);
 	mMousePos.x = x; mMousePos.y = y;
 }
 
+// MAIN GAME LOOP
 void Game::GameEvents()
 {
 	SDL_RenderClear(mRenderer.GetRenderer());
 
+	// Loop for gameplay
 	if (mGameStarted) {
 		if (!mPlayer->IsDead()) {
 			mSpeed = 1;
@@ -80,13 +86,20 @@ void Game::GameEvents()
 			Died();
 		}
 	}
+	// Loop for menu
 	else {
-		if (!mOpenLeaderboard) {
-			Menu();
+		// Only Menu
+		if (!mOpenLeaderboard && !mOpenSettings) {
+			Menu(1);
 		}
-		else {
-			Menu();
+		// Leaderboards
+		else if (mOpenLeaderboard && !mOpenSettings) {
+			Menu(0);
 			Leaderboard();
+		}
+		else if (!mOpenLeaderboard && mOpenSettings) {
+			Menu(0);
+			Settings();
 		}
 	}
 
@@ -101,12 +114,12 @@ void Game::Playing()
 
 	CheckCollisions();
 
-	mRenderer.RenderGameplay(mScore);
+	mRenderer.RenderGameplay(mScore, mData.GetMusicLevel());
 }
 
-void Game::Menu()
+void Game::Menu(int state)
 {
-	mRenderer.RenderMenu();
+	mRenderer.RenderMenu(state);
 }
 
 void Game::Leaderboard()
@@ -118,12 +131,18 @@ void Game::Leaderboard()
 	mRenderer.RenderScoresScreen(arr);
 }
 
+void Game::Settings()
+{
+	mRenderer.RenderSettingsScreen(mData.GetMusicLevel());
+}
+
 void Game::Died()
 {
 	if (mAddScore) mData.AddScore(mScore);
 	mAddScore = false;
 
 	mRenderer.RenderDeathScreen(mScore, mData.GetHighScore());
+	Mix_PauseMusic();
 }
 
 
@@ -142,26 +161,45 @@ void Game::HandleMouse(SDL_MouseButtonEvent btn)
 		if (mGameStarted == false) {
 			if (mOpenLeaderboard == true) {
 				if (CheckMousePos(BTNRESETSCORE)) {
+					mRenderer.PlaySound(SOUNDBUTTON);
 					mData.RestartScores();
 				}
 			}
-			else {
+			if (mOpenSettings == true) {
+				if (CheckMousePos(BTNLEFTVOLUME)) {
+					mRenderer.PlaySound(SOUNDBUTTON);
+					mData.ChangeMusic(-1);
+				}
+				if (CheckMousePos(BTNRIGHTVOLUME)) {
+					mRenderer.PlaySound(SOUNDBUTTON);
+					mData.ChangeMusic(1);
+				}
+			}
+			else if (mOpenLeaderboard != true && mOpenSettings != true) {
 				if (CheckMousePos(BTNPLAY)) {
+					mRenderer.PlaySound(SOUNDBUTTON);
 					mGameStarted = true;
 					StartGame();
 				}
 				else if (CheckMousePos(BTNSCORE)) {
+					mRenderer.PlaySound(SOUNDBUTTON);
 					mOpenLeaderboard = true;
+				}
+				else if (CheckMousePos(BTNSETTINGS)) {
+					mRenderer.PlaySound(SOUNDBUTTON);
+					mOpenSettings = true;
 				}
 			}
 
 		}
 		else {
 			if (CheckMousePos(BTNPLAY_AGAIN)) {
+				mRenderer.PlaySound(SOUNDBUTTON);
 				mGameStarted = true;
 				StartGame();
 			}
 			else if (CheckMousePos(BTNHOME)) {
+				mRenderer.PlaySound(SOUNDBUTTON);
 				mGameStarted = false;
 			}
 			

@@ -7,6 +7,7 @@ mScreenRect{width/2 - 250, height/2 - 250, 500, 400}
 	mBackgroundTexture[MENU] = "images//MenuBackground.png";
 	mScreenTexture[SCRDEATH] = "images//DeathScreen.png";
 	mScreenTexture[SCRSCORES] = "images//ScoresScreen.png";
+	mScreenTexture[SCRSETTINGS] = "images//SettingsScreen.png";
 
 	InitButton();
 	InitText();
@@ -27,6 +28,9 @@ void Background::InitButton()
 	mButtonTexture[BTNHOME] = "images//HomeButton.png";
 	mButtonTexture[BTNSCORE] = "images//ScoresButton.png";
 	mButtonTexture[BTNRESETSCORE] = "images//PlayAgainButton.png";
+	mButtonTexture[BTNSETTINGS] = "images//SettingsButton.png";
+	mButtonTexture[BTNRIGHTVOLUME] = "images//RightVolumeButton.png";
+	mButtonTexture[BTNLEFTVOLUME] = "images//LeftVolumeButton.png";
 
 	for (int i = 0; i < sizeof(mButtonRect) / sizeof(mButtonRect[0]); i++) {
 		mButtonRect[i].w = 160;
@@ -42,6 +46,15 @@ void Background::InitButton()
 	mButtonRect[BTNPLAY_AGAIN].x = centerRight; mButtonRect[BTNPLAY_AGAIN].y = 540;
 	mButtonRect[BTNHOME].x = centerLeft; mButtonRect[BTNHOME].y = 540;
 	mButtonRect[BTNRESETSCORE].x = center; mButtonRect[BTNRESETSCORE].y = mHeight / 2 + 175;
+	mButtonRect[BTNSETTINGS].x = center; mButtonRect[BTNSETTINGS].y = mHeight / 2 + 150;
+
+	mButtonRect[BTNLEFTVOLUME] = {
+		mWidth / 2 - 190, 310, 60, 50
+	};
+
+	mButtonRect[BTNRIGHTVOLUME] = {
+		mWidth / 2 + 130, 310, 60, 50
+	};
 }
 
 void Background::InitText()

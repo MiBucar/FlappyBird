@@ -25,8 +25,9 @@ private:
 	// Game States
 	void Playing();
 	void Died();
-	void Menu();
+	void Menu(int state);
 	void Leaderboard();
+	void Settings();
 
 	bool mIsRunning;
 
@@ -48,6 +49,7 @@ private:
 	int mScore = 0;
 	bool mGameStarted = false;
 	bool mOpenLeaderboard = false;
+	bool mOpenSettings = false;
 	bool mAddScore = true;
 };
 
