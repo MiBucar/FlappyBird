@@ -37,10 +37,11 @@ private:
 	void RenderFloor();
 	void RenderBackground(BackgroundTextures texture);
 	void RenderButton(int btn);
-	void RenderText(int score);
+	void RenderScore(int score);
 	void RenderAudioLevels(int musicLevel, int type);
 	void InitTextures();
 	void InitAudio();
+	void ClearTextPointers(int id);
 
 	SDL_Window* mWindow;
 	SDL_Renderer* mRenderer;

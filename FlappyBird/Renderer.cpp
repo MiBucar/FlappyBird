@@ -86,7 +86,7 @@ void Renderer::RenderGameplay(int score)
 
 	if (mPlayer->IsDead()) RenderPlayer(mPlayerTexture[FALLING]);
 	else {
-		RenderText(score);
+		RenderScore(score);
 		RenderPlayer(mPlayerTexture[FLYING]);
 	}
 	RenderFloor();
@@ -127,6 +127,9 @@ void Renderer::RenderDeathScreen(int score, int highScore)
 	mTextSurface[TEXTBEST] = TTF_RenderText_Solid(mFont, mText[TEXTBEST].c_str(), mColorBrown);
 	mTextTexture[TEXTBEST] = SDL_CreateTextureFromSurface(mRenderer, mTextSurface[TEXTBEST]);
 	SDL_RenderCopy(mRenderer, mTextTexture[TEXTBEST], &mSrc, mBackground->GetTextRect(TEXTBEST));
+
+	ClearTextPointers(TEXTSCOREDS);
+	ClearTextPointers(TEXTBEST);
 }
 
 void Renderer::RenderScoresScreen(int arr[5])
@@ -159,6 +162,10 @@ void Renderer::RenderScoresScreen(int arr[5])
 	mTextSurface[TEXT5] = TTF_RenderText_Solid(mFont, mText[TEXT5].c_str(), mColorBrown);
 	mTextTexture[TEXT5] = SDL_CreateTextureFromSurface(mRenderer, mTextSurface[TEXT5]);
 	SDL_RenderCopy(mRenderer, mTextTexture[TEXT5], &mSrc, mBackground->GetTextRect(TEXT5));
+
+	for (int i = TEXT1; i < EMPTYTEXT; i++) {
+		ClearTextPointers(i);
+	}
 
 	RenderButton(BTNRESETSCORE);
 }
@@ -302,12 +309,13 @@ void Renderer::RenderButton(int btn)
 	SDL_RenderCopy(mRenderer, mButtonTexture[btn], &mSrc, mBackground->GetButtonRect(btn));
 }
 
-void Renderer::RenderText(int score)
+void Renderer::RenderScore(int score)
 {
 	mText[TEXTSCOREGMP] = std::to_string(score);
 	mTextSurface[TEXTSCOREGMP] = TTF_RenderText_Solid(mFont, mText[TEXTSCOREGMP].c_str(), mColorBrown);
 	mTextTexture[TEXTSCOREGMP] = SDL_CreateTextureFromSurface(mRenderer, mTextSurface[TEXTSCOREGMP]);
 	SDL_RenderCopy(mRenderer, mTextTexture[TEXTSCOREGMP], &mSrc, mBackground->GetTextRect(TEXTSCOREGMP));
+	ClearTextPointers(TEXTSCOREGMP);
 }
 
 void Renderer::InitTextures()
@@ -343,4 +351,10 @@ void Renderer::InitAudio()
 	mSound[SOUNDBUTTON] = Mix_LoadWAV(mAudio.GetSound(SOUNDBUTTON).c_str());
 	mSound[SOUNDDIE] = Mix_LoadWAV(mAudio.GetSound(SOUNDDIE).c_str());
 	mMusic[MUSICGAME] = Mix_LoadMUS(mAudio.GetMusic(MUSICGAME).c_str());
+}
+
+void Renderer::ClearTextPointers(int id)
+{
+	SDL_DestroyTexture(mTextTexture[id]); mTextTexture[id] = nullptr;
+	SDL_FreeSurface(mTextSurface[id]); mTextSurface[id] = nullptr;
 }

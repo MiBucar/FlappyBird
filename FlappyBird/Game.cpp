@@ -6,6 +6,9 @@ Game::Game() : mPlayer(new Player(mScreenWidth, mScreenHeight)), mPipes(new Pipe
 mBackground(new Background(mScreenWidth, mScreenHeight)), mRenderer(mPlayer, mBackground, mPipes, mScreenWidth, mScreenHeight),
 mIsRunning(true), mMousePos{ 0, 0 }
 {
+	// Adjust the volume to what it was before quitting
+	mRenderer.ChangeMusicLevel(mData.GetAudioLevel(TYPEMUSIC));
+	mRenderer.ChangeSoundLevel(mData.GetAudioLevel(TYPESOUND));
 }
 
 Game::~Game()
